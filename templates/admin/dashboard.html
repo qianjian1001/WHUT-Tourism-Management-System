@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% block title %}管理仪表盘 - 途行旅行社{% endblock %}{% block content %}
+<h1 class="text-2xl font-semibold tracking-tight mb-24">管理仪表盘</h1>
+
+<div class="grid grid-cols-4 gap-16 mb-24">
+  <div class="card p-24 flex items-center gap-12"><div class="w-10 h-10 flex items-center justify-center rounded-lg" style="background:#eff6ff"><svg class="w-5 h-5" style="color:#2563eb" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div><div><p class="text-xl font-semibold">{{ total_routes }}</p><p class="text-xs text-muted">活跃路线</p></div></div>
+  <div class="card p-24 flex items-center gap-12"><div class="w-10 h-10 flex items-center justify-center rounded-lg" style="background:#ecfdf5"><svg class="w-5 h-5" style="color:#059669" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg></div><div><p class="text-xl font-semibold">{{ total_groups }}</p><p class="text-xs text-muted">旅游团</p></div></div>
+  <div class="card p-24 flex items-center gap-12"><div class="w-10 h-10 flex items-center justify-center rounded-lg" style="background:#fffbeb"><svg class="w-5 h-5" style="color:#d97706" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg></div><div><p class="text-xl font-semibold">{{ total_bookings }}</p><p class="text-xs text-muted">总预订</p></div></div>
+  <div class="card p-24 flex items-center gap-12"><div class="w-10 h-10 flex items-center justify-center rounded-lg" style="background:#fef2f2"><svg class="w-5 h-5" style="color:#ef4444" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div><p class="text-xl font-semibold">{{ pending_bookings }}</p><p class="text-xs text-muted">待处理</p></div></div>
+</div>
+
+<div class="grid gap-16" style="grid-template-columns:1fr 320px">
+  <div class="card overflow-hidden">
+    <div class="px-24 py-16 flex items-center justify-between" style="border-bottom:1px solid rgb(var(--border))"><h3 class="text-sm font-semibold">最近预订</h3><a href="{{ url_for('admin.bookings') }}" class="text-sm" style="color:#2563eb;text-decoration:none">查看全部 →</a></div>
+    <table class="w-full">
+      <thead><tr style="border-bottom:1px solid rgb(var(--border))"><th class="text-left px-24 py-12 text-xs font-medium text-muted">编号</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">申请人</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">旅游团</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">人数</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">订金</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">状态</th></tr></thead>
+      <tbody>{% for b in recent_bookings %}<tr class="hover-muted transition-base" style="border-bottom:1px solid rgb(var(--border))">
+        <td class="px-24 py-12"><a href="{{ url_for('admin.booking_detail', id=b.id) }}" class="text-sm font-medium" style="color:#2563eb;font-family:monospace;text-decoration:none">{{ b.booking_no }}</a></td>
+        <td class="px-24 py-12 text-sm">{{ b.applicant_name }}</td><td class="px-24 py-12 text-sm">{{ b.tour_group.code if b.tour_group }}</td>
+        <td class="px-24 py-12 text-sm">{{ b.adult_count + b.child_count }}人</td>
+        <td class="px-24 py-12">{% if b.deposit_paid %}<span class="badge badge-success">已付</span>{% else %}<span class="badge badge-warning">未付</span>{% endif %}</td>
+        <td class="px-24 py-12">{% if b.status == 'pending' %}<span class="badge badge-warning">待确认</span>{% elif b.status == 'confirmed' %}<span class="badge badge-brand">已确认</span>{% elif b.status == 'completed' %}<span class="badge badge-success">已完成</span>{% elif b.status == 'cancelled' %}<span class="badge badge-destructive">已取消</span>{% endif %}</td>
+      </tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="flex flex-col gap-16">
+    <div class="card p-24 flex flex-col gap-12">
+      <h3 class="text-sm font-semibold mb-4">即将到期余款</h3>
+      {% if expiring_payments %}{% for b in expiring_payments %}<div class="p-12 rounded-lg" style="background:rgb(var(--muted))"><div class="flex justify-between text-sm"><span class="font-medium" style="font-family:monospace">{{ b.booking_no }}</span><span class="font-semibold" style="color:#ef4444">¥{{ "%.0f"|format(b.balance_amount) }}</span></div><p class="text-xs text-muted mt-4">截止: {{ b.payment_deadline }}</p></div>{% endfor %}{% else %}<p class="text-xs text-muted">暂无</p>{% endif %}
+    </div>
+    <div class="card p-24 flex flex-col gap-8">
+      <h3 class="text-sm font-semibold mb-8">快捷操作</h3>
+      <a href="{{ url_for('admin.routes') }}" class="btn-ghost justify-start" style="text-decoration:none">路线管理</a>
+      <a href="{{ url_for('admin.tour_groups') }}" class="btn-ghost justify-start" style="text-decoration:none">旅游团管理</a>
+      <a href="{{ url_for('admin.daily_documents') }}" class="btn-ghost justify-start" style="text-decoration:none">生成日常文件</a>
+      <a href="{{ url_for('admin.reports') }}" class="btn-ghost justify-start" style="text-decoration:none">财务导出</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

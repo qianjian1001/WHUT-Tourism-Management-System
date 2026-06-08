@@ -1,0 +1,38 @@
+{% extends "base.html" %}{% block title %}浏览旅游团 - 途行旅行社{% endblock %}{% block content %}
+<h1 class="text-2xl font-semibold tracking-tight mb-8">可预订旅游团</h1>
+<p class="text-sm text-muted mb-24">探索精选路线，找到心仪的旅程</p>
+
+{% if tours %}
+<div class="grid gap-16" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr))">
+  {% for g in tours %}
+  <div class="card p-24 flex flex-col gap-16 card-hover transition-base hover:-translate-y-0.5">
+    <div class="flex items-center gap-8">
+      <span class="badge badge-brand">{{ g.route.destination if g.route else '' }}</span>
+      {% if g.discount_info %}<span class="badge badge-warning">优惠</span>{% endif %}
+    </div>
+    <div>
+      <h3 class="text-base font-semibold mb-4">{{ g.route.name if g.route else g.code }}</h3>
+      <p class="text-xs text-muted">团号: {{ g.code }}</p>
+    </div>
+    <div class="flex flex-col gap-8 p-12 rounded-lg" style="background:rgb(var(--muted))">
+      <div class="flex justify-between text-sm"><span class="text-muted">出发</span><span class="font-medium">{{ g.departure_date }}</span></div>
+      <div class="flex justify-between text-sm"><span class="text-muted">截止报名</span><span class="font-medium" style="color:#d97706">{{ g.deadline_date }}</span></div>
+      {% if g.route %}<div class="flex justify-between text-sm"><span class="text-muted">行程</span><span class="font-medium">{{ g.route.duration_days }}天</span></div>{% endif %}
+      <div class="flex justify-between text-sm"><span class="text-muted">剩余</span><span class="font-medium" style="color:#059669">{{ g.max_participants - g.current_participants }}/{{ g.max_participants }}</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex items-end justify-between">
+      <div><span class="text-xs text-muted">成人起</span><p class="text-xl font-semibold">¥{{ "%.0f"|format(g.adult_price) }}</p>{% if g.child_price > 0 %}<span class="text-xs text-muted">儿童 ¥{{ "%.0f"|format(g.child_price) }}</span>{% endif %}</div>
+      <a href="{{ url_for('customer.tour_detail', id=g.id) }}" class="btn-primary" style="text-decoration:none">查看详情</a>
+    </div>
+    {% if g.discount_info %}<div class="flex items-start gap-8 p-12 rounded-lg" style="background:#fffbeb"><svg class="w-4 h-4 flex-shrink-0" style="color:#d97706" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg><span class="text-xs font-medium" style="color:#92400e">{{ g.discount_info }}</span></div>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="flex flex-col items-center gap-12 py-48">
+  <div class="w-16 h-16 flex items-center justify-center rounded-xl" style="background:rgb(var(--muted))"><svg class="w-5 h-5" style="color:rgb(var(--muted-fg))" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div>
+  <p class="text-sm text-muted">暂无可预订的旅游团</p>
+</div>
+{% endif %}
+{% endblock %}

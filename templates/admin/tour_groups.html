@@ -1,0 +1,51 @@
+{% extends "base.html" %}{% block title %}旅游团管理 - 途行旅行社{% endblock %}{% block content %}
+<div class="flex items-center justify-between mb-24"><h1 class="text-2xl font-semibold tracking-tight">旅游团管理</h1><button onclick="document.getElementById('addGroupModal').classList.remove('hidden')" class="btn-primary">+ 新增旅游团</button></div>
+
+<div class="card overflow-hidden">
+  <table class="w-full">
+    <thead><tr style="border-bottom:1px solid rgb(var(--border));background:rgb(var(--muted))"><th class="text-left px-16 py-12 text-xs font-medium text-muted">团号</th><th class="text-left px-16 py-12 text-xs font-medium text-muted">路线</th><th class="text-left px-16 py-12 text-xs font-medium text-muted">出发</th><th class="text-left px-16 py-12 text-xs font-medium text-muted">截止</th><th class="text-left px-16 py-12 text-xs font-medium text-muted">人数</th><th class="text-left px-16 py-12 text-xs font-medium text-muted">成人价</th><th class="text-left px-16 py-12 text-xs font-medium text-muted">儿童价</th><th class="text-left px-16 py-12 text-xs font-medium text-muted">状态</th><th class="text-right px-16 py-12 text-xs font-medium text-muted">操作</th></tr></thead>
+    <tbody>{% for g in groups %}<tr class="hover-muted transition-base" style="border-bottom:1px solid rgb(var(--border))">
+      <td class="px-16 py-12 text-sm font-medium" style="color:#2563eb;font-family:monospace">{{ g.code }}</td>
+      <td class="px-16 py-12 text-sm">{{ g.route.name if g.route else '-' }}</td><td class="px-16 py-12 text-sm">{{ g.departure_date }}</td>
+      <td class="px-16 py-12 text-sm" style="color:#d97706">{{ g.deadline_date }}</td>
+      <td class="px-16 py-12 text-sm {% if g.current_participants >= g.max_participants %}"style="color:#ef4444;font-weight:600"{% endif %}>{{ g.current_participants }}/{{ g.max_participants }}</td>
+      <td class="px-16 py-12 text-sm">{% if g.adult_price %}¥{{ "%.0f"|format(g.adult_price) }}{% else %}-{% endif %}</td>
+      <td class="px-16 py-12 text-sm">{% if g.child_price %}¥{{ "%.0f"|format(g.child_price) }}{% else %}-{% endif %}</td>
+      <td class="px-16 py-12">{% if g.status == 'draft' %}<span class="badge badge-neutral">草稿</span>{% elif g.status == 'published' %}<span class="badge badge-success">已发布</span>{% elif g.status == 'cancelled' %}<span class="badge badge-destructive">已取消</span>{% endif %}</td>
+      <td class="px-16 py-12 text-right"><div class="flex items-center justify-end gap-4">
+        <button onclick="openPrice('{{ g.id }}','{{ g.adult_price }}','{{ g.child_price }}','{{ g.discount_info or '' }}')" class="btn-ghost w-8 h-8 p-0" title="价格"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg></button>
+        {% if not g.price_published %}<a href="{{ url_for('admin.publish_price', id=g.id) }}" class="btn-ghost w-8 h-8 p-0" title="发布"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></a>{% endif %}
+        <a href="{{ url_for('admin.toggle_group_status', id=g.id) }}" class="btn-ghost w-8 h-8 p-0" title="切换"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></a>
+      </div></td>
+    </tr>{% endfor %}</tbody>
+  </table>
+</div>
+
+<!-- Add Group Modal -->
+<div id="addGroupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-24" style="background:rgba(0,0,0,0.2);backdrop-filter:blur(4px)" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="card p-24 w-full flex flex-col gap-16" style="max-width:440px" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between"><h3 class="text-base font-semibold">新增旅游团</h3><button onclick="document.getElementById('addGroupModal').classList.add('hidden')" class="btn-ghost w-8 h-8 p-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <form method="POST" action="{{ url_for('admin.add_tour_group') }}" class="flex flex-col gap-12">
+      <div class="flex flex-col gap-4"><label class="text-sm font-medium">团号</label><input type="text" name="code" class="input" required></div>
+      <div class="flex flex-col gap-4"><label class="text-sm font-medium">路线</label><select name="route_id" class="input" required><option value="">请选择</option>{% for r in routes %}<option value="{{ r.id }}">{{ r.code }} - {{ r.name }}</option>{% endfor %}</select></div>
+      <div class="grid grid-cols-2 gap-12"><div class="flex flex-col gap-4"><label class="text-sm font-medium">出发</label><input type="date" name="departure_date" class="input" required></div><div class="flex flex-col gap-4"><label class="text-sm font-medium">返回</label><input type="date" name="return_date" class="input"></div></div>
+      <div class="grid grid-cols-2 gap-12"><div class="flex flex-col gap-4"><label class="text-sm font-medium">截止</label><input type="date" name="deadline_date" class="input" required></div><div class="flex flex-col gap-4"><label class="text-sm font-medium">限额</label><input type="number" name="max_participants" value="30" min="1" class="input"></div></div>
+      <div class="flex gap-12 pt-8"><button type="button" onclick="document.getElementById('addGroupModal').classList.add('hidden')" class="btn-secondary flex-1">取消</button><button type="submit" class="btn-primary flex-1">保存</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Price Modal -->
+<div id="priceModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-24" style="background:rgba(0,0,0,0.2);backdrop-filter:blur(4px)" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="card p-24 w-full flex flex-col gap-16" style="max-width:440px" onclick="event.stopPropagation()">
+    <h3 class="text-base font-semibold">价格设定: <span id="priceGroupCode" style="color:#2563eb"></span></h3>
+    <form id="priceForm" method="POST" class="flex flex-col gap-12">
+      <div class="flex flex-col gap-4"><label class="text-sm font-medium">成人价格 (元/人)</label><input type="number" name="adult_price" id="priceAdult" step="0.01" class="input" required></div>
+      <div class="flex flex-col gap-4"><label class="text-sm font-medium">儿童价格 (元/人)</label><input type="number" name="child_price" id="priceChild" step="0.01" class="input"></div>
+      <div class="flex flex-col gap-4"><label class="text-sm font-medium">优惠信息</label><textarea name="discount_info" id="priceDiscount" rows="2" class="input"></textarea></div>
+      <div class="flex gap-12 pt-8"><button type="button" onclick="document.getElementById('priceModal').classList.add('hidden')" class="btn-secondary flex-1">取消</button><button type="submit" class="btn-primary flex-1">保存价格</button></div>
+    </form>
+  </div>
+</div>
+<script>function openPrice(id,adult,child,discount){document.getElementById('priceForm').action='/admin/tour-groups/'+id+'/pricing';document.getElementById('priceGroupCode').textContent=id;document.getElementById('priceAdult').value=adult;document.getElementById('priceChild').value=child;document.getElementById('priceDiscount').value=discount;document.getElementById('priceModal').classList.remove('hidden')}</script>
+{% endblock %}

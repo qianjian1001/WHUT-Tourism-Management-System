@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block title %}日常文件生成 - 途行旅行社{% endblock %}{% block content %}
+<h1 class="text-2xl font-semibold tracking-tight mb-8">每日文件生成</h1>
+<p class="text-sm text-muted mb-24">前一天已完成申请的旅游确认书和余额交款单 — {{ yesterday }}</p>
+
+<div class="card overflow-hidden">
+  {% if bookings %}
+  <table class="w-full">
+    <thead><tr style="border-bottom:1px solid rgb(var(--border));background:rgb(var(--muted))"><th class="text-left px-24 py-12 text-xs font-medium text-muted">编号</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">申请人</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">旅游团</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">总额</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">余款</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">打印文件</th></tr></thead>
+    <tbody>{% for b in bookings %}<tr style="border-bottom:1px solid rgb(var(--border))">
+      <td class="px-24 py-12 text-sm font-medium" style="color:#2563eb;font-family:monospace">{{ b.booking_no }}</td>
+      <td class="px-24 py-12 text-sm">{{ b.applicant_name }}</td><td class="px-24 py-12 text-sm">{{ b.tour_group.code if b.tour_group }}</td>
+      <td class="px-24 py-12 text-sm">¥{{ "%.0f"|format(b.total_amount) }}</td><td class="px-24 py-12 text-sm">¥{{ "%.0f"|format(b.balance_amount) }}</td>
+      <td class="px-24 py-12">{% if b.balance_amount <= 0 %}<span class="badge badge-success">仅确认书</span>{% else %}<span class="badge badge-warning">确认书+交款单</span>{% endif %}</td>
+    </tr>{% endfor %}</tbody>
+  </table>
+  <div class="p-24 flex items-start gap-8" style="background:#eff6ff"><svg class="w-4 h-4 flex-shrink-0 mt-2" style="color:#2563eb" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><div class="text-sm" style="color:#1e40af"><p class="font-medium mb-8">操作指引</p>{% for b in bookings %}<p class="mb-4">{{ b.booking_no }}: 打印<strong>{% if b.balance_amount <= 0 %}旅游确认书{% else %}旅游确认书 + 余额交款单{% endif %}</strong></p>{% endfor %}<p class="mt-8">请装入信封，书写收件人，邮寄给申请人。</p></div></div>
+  {% else %}<div class="py-32 text-center text-sm text-muted">暂无完成的申请</div>{% endif %}
+</div>
+{% endblock %}

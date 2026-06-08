@@ -1,0 +1,64 @@
+{% extends "base.html" %}{% block title %}首页 - 途行旅行社{% endblock %}{% block content %}
+<div class="flex flex-col gap-24">
+  <!-- Stats row -->
+  <div class="grid grid-cols-3 gap-16">
+    <div class="card p-24 flex items-center gap-12">
+      <div class="w-10 h-10 flex items-center justify-center rounded-lg" style="background:#eff6ff"><svg class="w-5 h-5" style="color:#2563eb" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg></div>
+      <div><p class="text-xl font-semibold">{{ bookings|length }}</p><p class="text-xs text-muted">我的预订</p></div>
+    </div>
+    <div class="card p-24 flex items-center gap-12">
+      <div class="w-10 h-10 flex items-center justify-center rounded-lg" style="background:#ecfdf5"><svg class="w-5 h-5" style="color:#059669" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+      <div><p class="text-xl font-semibold">{{ bookings|selectattr('status','in',['confirmed','completed'])|list|length }}</p><p class="text-xs text-muted">已确认</p></div>
+    </div>
+    <div class="card p-24 flex items-center gap-12">
+      <div class="w-10 h-10 flex items-center justify-center rounded-lg" style="background:#fffbeb"><svg class="w-5 h-5" style="color:#d97706" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+      <div><p class="text-xl font-semibold">{{ bookings|selectattr('status','equalto','pending')|list|length }}</p><p class="text-xs text-muted">待处理</p></div>
+    </div>
+  </div>
+
+  <!-- Bookings table -->
+  <div class="card overflow-hidden">
+    <div class="px-24 py-16 flex items-center justify-between" style="border-bottom:1px solid rgb(var(--border))">
+      <h3 class="text-sm font-semibold">最近预订</h3>
+      <a href="{{ url_for('customer.my_bookings') }}" class="text-sm" style="color:#2563eb;text-decoration:none">查看全部 →</a>
+    </div>
+    {% if bookings %}
+    <table class="w-full">
+      <thead><tr style="border-bottom:1px solid rgb(var(--border))">
+        <th class="text-left px-24 py-12 text-xs font-medium text-muted">预订编号</th>
+        <th class="text-left px-24 py-12 text-xs font-medium text-muted">旅游团</th>
+        <th class="text-left px-24 py-12 text-xs font-medium text-muted">出发日期</th>
+        <th class="text-left px-24 py-12 text-xs font-medium text-muted">人数</th>
+        <th class="text-left px-24 py-12 text-xs font-medium text-muted">总额</th>
+        <th class="text-left px-24 py-12 text-xs font-medium text-muted">状态</th>
+        <th class="text-right px-24 py-12 text-xs font-medium text-muted">操作</th>
+      </tr></thead>
+      <tbody>
+        {% for b in bookings[:5] %}
+        <tr class="hover-muted transition-base" style="border-bottom:1px solid rgb(var(--border))">
+          <td class="px-24 py-12 text-sm font-medium" style="color:#2563eb;font-family:monospace">{{ b.booking_no }}</td>
+          <td class="px-24 py-12 text-sm">{{ b.tour_group.code if b.tour_group }}</td>
+          <td class="px-24 py-12 text-sm">{{ b.tour_group.departure_date if b.tour_group }}</td>
+          <td class="px-24 py-12 text-sm">{{ b.adult_count + b.child_count }}人</td>
+          <td class="px-24 py-12 text-sm font-medium">¥{{ "%.0f"|format(b.total_amount) }}</td>
+          <td class="px-24 py-12">
+            {% if b.status == 'pending' %}<span class="badge badge-warning">待处理</span>
+            {% elif b.status == 'confirmed' %}<span class="badge badge-brand">已确认</span>
+            {% elif b.status == 'completed' %}<span class="badge badge-success">已完成</span>
+            {% elif b.status == 'cancelled' %}<span class="badge badge-destructive">已取消</span>
+            {% else %}<span class="badge badge-neutral">{{ b.status }}</span>{% endif %}
+          </td>
+          <td class="px-24 py-12 text-right"><a href="{{ url_for('customer.booking_detail', id=b.id) }}" class="text-sm" style="color:#2563eb;text-decoration:none">详情</a></td>
+        </tr>{% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="flex flex-col items-center gap-12 py-48">
+      <div class="w-12 h-12 flex items-center justify-center rounded-xl" style="background:rgb(var(--muted))"><svg class="w-5 h-5" style="color:rgb(var(--muted-fg))" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5"/></svg></div>
+      <p class="text-sm text-muted">暂无预订记录</p>
+      <a href="{{ url_for('customer.tours') }}" class="btn-primary" style="text-decoration:none">浏览旅游团</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

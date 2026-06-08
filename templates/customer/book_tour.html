@@ -1,0 +1,125 @@
+{% extends "base.html" %}{% block title %}旅游申请办理 - 途行旅行社{% endblock %}{% block content %}
+
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-8 text-sm text-muted mb-24">
+  <a href="{{ url_for('customer.tours') }}" class="hover:underline" style="color:inherit;text-decoration:none">旅游团列表</a>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="{{ url_for('customer.tour_detail', id=group.id) }}" class="hover:underline" style="color:inherit;text-decoration:none">{{ group.code }}</a>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span class="font-medium" style="color:rgb(var(--fg))">申请办理</span>
+</nav>
+
+<h1 class="text-2xl font-semibold tracking-tight mb-8">旅游申请办理</h1>
+<p class="text-sm text-muted mb-24">填写以下信息完成旅游团预订申请</p>
+
+<div class="grid gap-16" style="grid-template-columns:1fr 380px">
+  <!-- Left: Form -->
+  <div class="flex flex-col gap-16">
+
+    <!-- Tour Info -->
+    <div class="card p-24 flex flex-col gap-12">
+      <div class="flex items-center gap-8">
+        <div class="w-8 h-8 flex items-center justify-center rounded-lg" style="background:#eff6ff">
+          <svg class="w-4 h-4" style="color:#2563eb" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <div><h3 class="text-sm font-semibold">{{ group.route.name if group.route else group.code }}</h3><p class="text-xs text-muted">团号 {{ group.code }}</p></div>
+      </div>
+      <div class="grid grid-cols-4 gap-8">
+        <div class="p-8 rounded-lg text-center" style="background:rgb(var(--muted))"><p class="text-xs text-muted mb-4">出发日期</p><p class="text-sm font-semibold">{{ group.departure_date }}</p></div>
+        <div class="p-8 rounded-lg text-center" style="background:rgb(var(--muted))"><p class="text-xs text-muted mb-4">截止报名</p><p class="text-sm font-semibold" style="color:#d97706">{{ group.deadline_date }}</p></div>
+        <div class="p-8 rounded-lg text-center" style="background:rgb(var(--muted))"><p class="text-xs text-muted mb-4">成人价</p><p class="text-sm font-semibold">¥{{ "%.0f"|format(group.adult_price) }}</p></div>
+        <div class="p-8 rounded-lg text-center" style="background:rgb(var(--muted))"><p class="text-xs text-muted mb-4">剩余名额</p><p class="text-sm font-semibold" style="color:#059669">{{ group.max_participants - group.current_participants }}/{{ group.max_participants }}</p></div>
+      </div>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="card p-24">
+      <h3 class="text-sm font-semibold mb-4">申请人信息</h3>
+      <p class="text-xs text-muted mb-16">请输入申请责任人的联系信息</p>
+      <form method="POST" id="bookingForm" class="flex flex-col gap-24">
+        <div class="grid grid-cols-2 gap-16">
+          <div class="flex flex-col gap-4"><label class="text-sm font-medium">责任人姓名 <span style="color:#ef4444">*</span></label><input type="text" name="applicant_name" value="{{ current_user.name }}" class="input" required></div>
+          <div class="flex flex-col gap-4"><label class="text-sm font-medium">联系电话 <span style="color:#ef4444">*</span></label><input type="text" name="applicant_phone" value="{{ current_user.phone or '' }}" class="input" required></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div>
+          <h3 class="text-sm font-semibold mb-4">参加人数</h3>
+          <p class="text-xs text-muted mb-16">选择大人和小孩的人数</p>
+          <div class="grid grid-cols-2 gap-16">
+            <div class="flex flex-col gap-8">
+              <label class="text-sm font-medium">大人人数</label>
+              <div class="flex items-center gap-8">
+                <button type="button" onclick="adjustCount('adult',-1)" class="w-10 h-10 flex items-center justify-center rounded-lg border transition-base" style="border-color:rgb(var(--border));color:rgb(var(--fg))">−</button>
+                <input type="number" name="adult_count" id="adultCount" value="1" min="1" class="input text-center" style="width:64px" onchange="calcDeposit()" readonly>
+                <button type="button" onclick="adjustCount('adult',1)" class="w-10 h-10 flex items-center justify-center rounded-lg border transition-base" style="border-color:rgb(var(--border));color:rgb(var(--fg))">+</button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-8">
+              <label class="text-sm font-medium">小孩人数</label>
+              <div class="flex items-center gap-8">
+                <button type="button" onclick="adjustCount('child',-1)" class="w-10 h-10 flex items-center justify-center rounded-lg border transition-base" style="border-color:rgb(var(--border));color:rgb(var(--fg))">−</button>
+                <input type="number" name="child_count" id="childCount" value="0" min="0" class="input text-center" style="width:64px" onchange="calcDeposit()" readonly>
+                <button type="button" onclick="adjustCount('child',1)" class="w-10 h-10 flex items-center justify-center rounded-lg border transition-base" style="border-color:rgb(var(--border));color:rgb(var(--fg))">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-full">提交预订申请</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right: Price Sidebar -->
+  <div class="flex flex-col gap-16" style="position:sticky;top:80px;align-self:start">
+    <div class="card p-24 flex flex-col gap-16">
+      <div class="flex items-center gap-8">
+        <svg class="w-4 h-4" style="color:#d97706" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        <h3 class="text-sm font-semibold">费用明细</h3>
+      </div>
+
+      <div class="flex flex-col gap-12">
+        <div class="flex justify-between text-sm"><span class="text-muted">成人 <span id="adultLabel">1</span>人 × ¥{{ "%.0f"|format(group.adult_price) }}</span></div>
+        <div class="flex justify-between text-sm"><span class="text-muted">儿童 <span id="childLabel">0</span>人 × ¥{{ "%.0f"|format(group.child_price or group.adult_price * 0.6) }}</span></div>
+        <div class="divider"></div>
+        <div class="flex justify-between"><span class="text-sm font-medium">总旅费</span><span id="totalAmountDisplay" class="text-xl font-semibold">¥0</span></div>
+      </div>
+
+      <!-- Deposit Highlight -->
+      <div class="p-16 rounded-lg" style="background:#eff6ff">
+        <div class="flex items-center gap-8 mb-8">
+          <span class="badge badge-brand">应付订金</span>
+          <span class="text-xs text-muted">距出发 {{ days_to_departure }} 天</span>
+        </div>
+        <p id="depositAmountDisplay" class="text-2xl font-bold" style="color:#2563eb">¥0</p>
+        <p class="text-xs text-muted mt-8">订金根据距离出发天数自动计算</p>
+      </div>
+
+      {% if group.discount_info %}
+      <div class="p-12 rounded-lg flex items-start gap-8" style="background:#fffbeb">
+        <svg class="w-4 h-4 flex-shrink-0 mt-2" style="color:#d97706" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
+        <span class="text-xs font-medium" style="color:#92400e">{{ group.discount_info }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}{% block scripts %}
+<script>
+var adultPrice={{ group.adult_price }},childPrice={{ group.child_price or group.adult_price * 0.6 }},daysToDeparture={{ days_to_departure }};
+function adjustCount(t,d){var i=document.getElementById(t==='adult'?'adultCount':'childCount'),v=parseInt(i.value)+d;if(t==='adult'&&v<1)v=1;if(t==='child'&&v<0)v=0;i.value=v;calcDeposit()}
+function calcDeposit(){
+var a=parseInt(document.getElementById('adultCount').value)||0,c=parseInt(document.getElementById('childCount').value)||0;
+var total=adultPrice*a+childPrice*c,r;
+if(daysToDeparture>=30)r=0.2;else if(daysToDeparture>=20)r=0.4;else if(daysToDeparture>=10)r=0.5;else if(daysToDeparture>=2)r=0.8;else r=1.0;
+var dep=(adultPrice*a*r)+(adultPrice*0.6*c*r);
+document.getElementById('adultLabel').textContent=a;
+document.getElementById('childLabel').textContent=c;
+document.getElementById('totalAmountDisplay').textContent='¥'+total.toLocaleString('zh-CN',{maximumFractionDigits:0});
+document.getElementById('depositAmountDisplay').textContent='¥'+dep.toLocaleString('zh-CN',{maximumFractionDigits:0});
+}
+calcDeposit();
+</script>
+{% endblock %}

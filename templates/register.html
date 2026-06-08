@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block title %}注册 - 途行旅行社{% endblock %}{% block content %}
+<div class="flex items-center justify-center min-h-[80vh]">
+  <div class="w-full flex flex-col gap-24" style="max-width:400px">
+    <div class="flex flex-col items-center gap-8">
+      <div class="w-12 h-12 flex items-center justify-center rounded-xl" style="background:#2563eb">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+      </div>
+      <h2 class="text-xl font-semibold">创建新账户</h2>
+      <p class="text-sm text-muted">加入途行旅行社，开启美好旅程</p>
+    </div>
+    <div class="card p-24">
+      <form method="POST" class="flex flex-col gap-16">
+        <div class="flex flex-col gap-4"><label class="text-sm font-medium">用户名</label><input type="text" name="username" class="input" placeholder="设置登录用户名" required></div>
+        <div class="flex flex-col gap-4"><label class="text-sm font-medium">密码</label><input type="password" name="password" class="input" placeholder="设置密码" required></div>
+        <div class="grid grid-cols-2 gap-12">
+          <div class="flex flex-col gap-4"><label class="text-sm font-medium">姓名</label><input type="text" name="name" class="input" placeholder="真实姓名" required></div>
+          <div class="flex flex-col gap-4"><label class="text-sm font-medium">电话</label><input type="text" name="phone" class="input" placeholder="联系电话"></div>
+        </div>
+        <div class="flex flex-col gap-4"><label class="text-sm font-medium">邮箱</label><input type="email" name="email" class="input" placeholder="电子邮箱（选填）"></div>
+        <button type="submit" class="btn-primary w-full">注册</button>
+        <p class="text-sm text-center text-muted">已有账户？<a href="{{ url_for('auth.login') }}" style="color:#2563eb;text-decoration:none" class="hover:underline">立即登录</a></p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

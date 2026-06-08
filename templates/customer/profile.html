@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block title %}个人设置 - 途行旅行社{% endblock %}{% block content %}
+<h1 class="text-2xl font-semibold tracking-tight mb-24">个人设置</h1>
+<div class="card p-24 flex flex-col gap-24" style="max-width:480px">
+  <form method="POST" class="flex flex-col gap-16">
+    <div class="flex flex-col gap-4"><label class="text-sm font-medium">用户名</label><input type="text" value="{{ current_user.username }}" disabled class="input" style="opacity:0.5"></div>
+    <div class="flex flex-col gap-4"><label class="text-sm font-medium">姓名</label><input type="text" name="name" value="{{ current_user.name }}" class="input" required></div>
+    <div class="flex flex-col gap-4"><label class="text-sm font-medium">电话</label><input type="text" name="phone" value="{{ current_user.phone or '' }}" class="input"></div>
+    <div class="flex flex-col gap-4"><label class="text-sm font-medium">邮箱</label><input type="email" name="email" value="{{ current_user.email or '' }}" class="input"></div>
+    <div class="divider"></div>
+    <h3 class="text-sm font-semibold">修改密码</h3>
+    <div class="flex flex-col gap-4"><label class="text-sm font-medium">当前密码</label><input type="password" name="current_password" class="input"></div>
+    <div class="flex flex-col gap-4"><label class="text-sm font-medium">新密码 <span class="text-muted font-normal">(留空不修改)</span></label><input type="password" name="new_password" class="input" placeholder="新密码"></div>
+    <button type="submit" class="btn-primary">保存更改</button>
+  </form>
+</div>
+{% endblock %}

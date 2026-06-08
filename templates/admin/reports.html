@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% block title %}财务报表 - 途行旅行社{% endblock %}{% block content %}
+<h1 class="text-2xl font-semibold tracking-tight mb-24">财务报表导出</h1>
+
+<div class="card p-24 flex items-center justify-between mb-16">
+  <div><h3 class="text-sm font-semibold mb-4">当日财务数据导出</h3><p class="text-xs text-muted">导出当天的订金和余款支付记录到财务系统</p></div>
+  <a href="{{ url_for('admin.export_financial') }}" class="btn-primary" style="text-decoration:none">导出数据</a>
+</div>
+
+{% if exported %}
+<div class="card overflow-hidden">
+  <div class="px-24 py-16" style="border-bottom:1px solid rgb(var(--border))"><h3 class="text-sm font-semibold">导出结果</h3></div>
+  {% if export_data %}
+  <table class="w-full">
+    <thead><tr style="border-bottom:1px solid rgb(var(--border));background:rgb(var(--muted))"><th class="text-left px-24 py-12 text-xs font-medium text-muted">支付ID</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">预订ID</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">类型</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">金额</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">时间</th></tr></thead>
+    <tbody>{% for p in export_data %}<tr style="border-bottom:1px solid rgb(var(--border))"><td class="px-24 py-12 text-sm">{{ p.payment_id }}</td><td class="px-24 py-12 text-sm">{{ p.booking_id }}</td><td class="px-24 py-12">{% if p.type == 'deposit' %}<span class="badge badge-brand">订金</span>{% else %}<span class="badge badge-success">余款</span>{% endif %}</td><td class="px-24 py-12 text-sm font-medium">¥{{ "%.2f"|format(p.amount) }}</td><td class="px-24 py-12 text-sm text-muted">{{ p.paid_at }}</td></tr>{% endfor %}</tbody>
+  </table>
+  {% endif %}
+  <div class="p-24 flex items-start gap-8" style="background:#ecfdf5"><svg class="w-4 h-4 flex-shrink-0 mt-2" style="color:#059669" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><div class="text-sm" style="color:#065f46"><p class="font-medium">导出完成</p><p>订金总计: <strong>¥{{ "%.2f"|format(total_deposit) }}</strong> | 余款总计: <strong>¥{{ "%.2f"|format(total_balance) }}</strong></p></div></div>
+</div>
+{% endif %}
+{% endblock %}

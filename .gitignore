@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.pyo
+travel.db
+.claude/
+description.docx
