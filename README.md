@@ -1,1 +1,0 @@
-# WHUT-Tourism-Management-System
