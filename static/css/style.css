@@ -1,15 +1,45 @@
-/* Supplementary styles for Tailwind-based travel management system */
-/* Most styling is now handled by Tailwind utility classes directly in templates */
+/* Apple-inspired supplementary styles for travel management system */
 
-/* Smooth scrollbar */
+/* Smooth native scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,0.35); }
+
+/* Table row - smooth highlight */
+tr {
+  transition: background 0.15s ease;
+}
+
+/* Table header */
+th {
+  font-weight: 590;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Smooth focus ring for non-input elements */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid rgba(var(--primary), 0.4);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
 
 /* Print styles */
 @media print {
-    nav, .btn-hover-lift, button { display: none !important; }
-    body { background: white; }
-    .card-shadow { box-shadow: none; border: 1px solid #e2e8f0; }
+  nav, .nav-glass, button, .btn-primary, .btn-secondary, .btn-ghost, .btn-destructive {
+    display: none !important;
+  }
+  body { background: white !important; color: black !important; }
+  .card { box-shadow: none; border: 1px solid #e5e5e5; }
+  header { position: static !important; }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

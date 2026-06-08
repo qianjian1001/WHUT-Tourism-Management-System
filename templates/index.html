@@ -1,22 +1,41 @@
-{% extends "base.html" %}{% block title %}途行旅行社 - 开启旅程{% endblock %}{% block content %}
+{% extends "base.html" %}{% block title %}途行旅行社 — 开启旅程{% endblock %}{% block content %}
 {% if not current_user.is_authenticated %}
-<div class="flex flex-col items-center justify-center min-h-[80vh] text-center gap-32">
-  <div class="flex flex-col items-center gap-16">
-    <div class="w-16 h-16 flex items-center justify-center rounded-2xl" style="background:#2563eb">
-      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<div class="flex flex-col items-center justify-center text-center" style="min-height:75vh;padding:40px 0">
+  <!-- Hero -->
+  <div class="flex flex-col items-center gap-24 animate-slide-up" style="max-width:520px">
+    <div class="w-20 h-20 flex items-center justify-center rounded-3xl shadow-sm" style="background:linear-gradient(135deg, rgb(var(--primary)), #5856d6)">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10"/><path d="M12 2a15.3 15.3 0 00-4 10 15.3 15.3 0 004 10"/></svg>
     </div>
-    <h1 class="text-3xl font-bold tracking-tight">途行旅行社</h1>
-    <p class="text-muted max-w-md">专业的组团旅游服务，智能化的业务管理系统，让每一次旅行都成为美好回忆。</p>
+    <div class="flex flex-col gap-12">
+      <h1 class="text-4xl font-bold tracking-tight" style="letter-spacing:-0.025em">途行旅行社</h1>
+      <p class="text-lg" style="color:rgb(var(--fg-secondary));line-height:1.6">专业的组团旅游服务，智能化的业务管理系统<br>让每一次旅行都成为美好回忆</p>
+    </div>
+    <div class="flex items-center gap-12 pt-8">
+      <a href="{{ url_for('auth.login') }}" class="btn-primary" style="text-decoration:none;padding:0 28px">开始使用</a>
+      <a href="{{ url_for('auth.register') }}" class="btn-secondary" style="text-decoration:none">注册账户</a>
+    </div>
   </div>
-  <div class="flex items-center gap-12">
-    <a href="{{ url_for('auth.login') }}" class="btn-primary" style="text-decoration:none">开始使用</a>
-    <a href="{{ url_for('auth.register') }}" class="btn-secondary" style="text-decoration:none">注册账户</a>
-  </div>
-  <div class="grid grid-cols-4 gap-16 max-w-lg">
-    <div class="flex flex-col items-center gap-4 p-16"><span class="text-2xl font-bold" style="color:#2563eb">7+</span><span class="text-xs text-muted">精选路线</span></div>
-    <div class="flex flex-col items-center gap-4 p-16"><span class="text-2xl font-bold" style="color:#2563eb">透明</span><span class="text-xs text-muted">价格公开</span></div>
-    <div class="flex flex-col items-center gap-4 p-16"><span class="text-2xl font-bold" style="color:#2563eb">灵活</span><span class="text-xs text-muted">组团方式</span></div>
-    <div class="flex flex-col items-center gap-4 p-16"><span class="text-2xl font-bold" style="color:#2563eb">安心</span><span class="text-xs text-muted">全程保障</span></div>
+
+  <!-- Stats -->
+  <div class="hero-gradient" style="margin-top:80px;padding:48px 0;width:100%;border-radius:24px">
+    <div class="grid gap-32" style="grid-template-columns:repeat(4,1fr);max-width:640px;margin:0 auto">
+      <div class="flex flex-col items-center gap-8">
+        <span class="text-4xl font-bold tracking-tight" style="color:rgb(var(--primary))">7+</span>
+        <span class="text-sm" style="color:rgb(var(--fg-secondary))">精选路线</span>
+      </div>
+      <div class="flex flex-col items-center gap-8">
+        <span class="text-4xl font-bold tracking-tight" style="color:rgb(var(--primary))">透明</span>
+        <span class="text-sm" style="color:rgb(var(--fg-secondary))">价格公开</span>
+      </div>
+      <div class="flex flex-col items-center gap-8">
+        <span class="text-4xl font-bold tracking-tight" style="color:rgb(var(--primary))">灵活</span>
+        <span class="text-sm" style="color:rgb(var(--fg-secondary))">组团方式</span>
+      </div>
+      <div class="flex flex-col items-center gap-8">
+        <span class="text-4xl font-bold tracking-tight" style="color:rgb(var(--primary))">安心</span>
+        <span class="text-sm" style="color:rgb(var(--fg-secondary))">全程保障</span>
+      </div>
+    </div>
   </div>
 </div>
 {% else %}

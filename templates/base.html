@@ -4,48 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}途行旅行社{% endblock %}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter','PingFang SC','Microsoft YaHei','system-ui','sans-serif'] },
+          fontFamily: {
+            sans: ['-apple-system','BlinkMacSystemFont','SF Pro Display','SF Pro Text','PingFang SC','Helvetica Neue','Microsoft YaHei','sans-serif'],
+          },
           borderRadius: {
-            sm: '8px',
-            DEFAULT: '10px',
-            md: '10px',
-            lg: '12px',
-            xl: '12px',
-            '2xl': '16px',
+            DEFAULT: '14px',
+            sm: '10px',
+            md: '14px',
+            lg: '18px',
+            xl: '22px',
+            '2xl': '28px',
+            '3xl': '34px',
           },
           boxShadow: {
-            'card': '0 1px 2px 0 rgba(0,0,0,0.04)',
-            'card-hover': '0 1px 3px 0 rgba(0,0,0,0.06)',
-            'card-dark': '0 1px 2px 0 rgba(0,0,0,0.3)',
-            'card-hover-dark': '0 1px 3px 0 rgba(0,0,0,0.4)',
+            'sm': '0 1px 2px 0 rgba(0,0,0,0.03)',
+            'card': '0 1px 3px 0 rgba(0,0,0,0.04), 0 1px 2px -1px rgba(0,0,0,0.03)',
+            'card-hover': '0 4px 12px 0 rgba(0,0,0,0.06), 0 1px 2px 0 rgba(0,0,0,0.04)',
+            'modal': '0 20px 60px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+            'dropdown': '0 12px 32px -8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)',
           },
           spacing: {
             '4': '4px', '8': '8px', '12': '12px', '16': '16px',
-            '24': '24px', '32': '32px', '40': '40px', '48': '48px',
+            '20': '20px', '24': '24px', '28': '28px', '32': '32px',
+            '36': '36px', '40': '40px', '48': '48px', '56': '56px',
+            '64': '64px', '80': '80px',
           },
           fontSize: {
-            'xs': ['12px','16px'],
-            'sm': ['13px','20px'],
-            'base': ['14px','20px'],
-            'lg': ['16px','24px'],
+            'xs': ['11px','16px'],
+            'sm': ['13px','18px'],
+            'base': ['15px','22px'],
+            'lg': ['17px','24px'],
             'xl': ['20px','28px'],
-            '2xl': ['24px','32px'],
-            '3xl': ['30px','36px'],
+            '2xl': ['28px','36px'],
+            '3xl': ['34px','42px'],
+            '4xl': ['40px','48px'],
           },
           colors: {
-            brand: {
-              50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe',
-              500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+            apple: {
+              50: '#f0f7ff', 100: '#e0effe', 200: '#baddfd', 300: '#7cc1fc',
+              400: '#36a6f9', 500: '#0c8ce9', 600: '#0070cc', 700: '#0059a3',
+              800: '#004b87', 900: '#003f70',
             },
+          },
+          transitionTimingFunction: {
+            'apple': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+            'apple-spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
           },
         },
       },
@@ -53,68 +62,312 @@
     </script>
     <style>
       :root {
-        --bg: 248 250 252; --fg: 15 23 42;
-        --card: 255 255 255; --card-fg: 15 23 42;
-        --border: 226 232 240; --muted: 241 245 249; --muted-fg: 100 116 139;
-        --primary: 37 99 235; --primary-fg: 255 255 255;
+        --bg: 245 245 247;
+        --card: 255 255 255;
+        --fg: 29 29 31;
+        --fg-secondary: 110 110 115;
+        --fg-tertiary: 153 153 153;
+        --border: 210 210 215;
+        --muted: 245 245 247;
+        --muted-hover: 232 232 237;
+        --primary: 0 122 255;
+        --primary-hover: 0 99 219;
+        --primary-light: 240 247 255;
+        --success: 52 199 89;
+        --success-light: 240 255 244;
+        --warning: 255 149 0;
+        --warning-light: 255 250 240;
+        --danger: 255 59 48;
+        --danger-light: 255 240 240;
       }
       .dark {
-        --bg: 15 23 42; --fg: 241 245 249;
-        --card: 30 41 59; --card-fg: 241 245 249;
-        --border: 51 65 85; --muted: 51 65 85; --muted-fg: 148 163 184;
-        --primary: 59 130 246; --primary-fg: 255 255 255;
+        --bg: 28 28 30;
+        --card: 44 44 46;
+        --fg: 245 245 247;
+        --fg-secondary: 174 174 178;
+        --fg-tertiary: 99 99 102;
+        --border: 58 58 60;
+        --muted: 44 44 46;
+        --muted-hover: 58 58 60;
+        --primary: 10 132 255;
+        --primary-hover: 56 155 255;
+        --primary-light: 28 40 60;
+        --success: 48 209 88;
+        --success-light: 28 50 36;
+        --warning: 255 159 10;
+        --warning-light: 50 38 18;
+        --danger: 255 69 58;
+        --danger-light: 50 28 28;
       }
-      body { font-size:14px; line-height:20px; }
-      .input-focus:focus { outline:none; border-color:rgb(var(--primary)); box-shadow:0 0 0 3px rgba(var(--primary),0.1); }
-      .card { background:rgb(var(--card)); border:1px solid rgb(var(--border)); border-radius:10px; box-shadow:0 1px 2px 0 rgba(0,0,0,0.04); }
-      .dark .card { box-shadow:0 1px 2px 0 rgba(0,0,0,0.3); }
-      .card-hover:hover { box-shadow:0 1px 3px 0 rgba(0,0,0,0.06); }
-      .dark .card-hover:hover { box-shadow:0 1px 3px 0 rgba(0,0,0,0.4); }
-      .btn-primary { background:#2563eb; color:#fff; height:40px; padding:0 20px; border-radius:10px; font-size:13px; font-weight:500; transition:background .15s; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
-      .btn-primary:hover { background:#1d4ed8; }
-      .dark .btn-primary { background:#3b82f6; }
-      .dark .btn-primary:hover { background:#2563eb; }
-      .btn-secondary { background:rgb(var(--muted)); color:rgb(var(--fg)); height:40px; padding:0 20px; border-radius:10px; font-size:13px; font-weight:500; border:1px solid rgb(var(--border)); transition:all .15s; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
-      .btn-secondary:hover { background:rgb(var(--border)); }
-      .btn-ghost { color:rgb(var(--muted-fg)); height:40px; padding:0 12px; border-radius:10px; font-size:13px; font-weight:500; transition:all .15s; display:inline-flex; align-items:center; justify-content:center; }
-      .btn-ghost:hover { background:rgb(var(--muted)); color:rgb(var(--fg)); }
-      .btn-destructive { background:transparent; color:#ef4444; height:40px; padding:0 20px; border-radius:10px; font-size:13px; font-weight:500; border:1px solid #fecaca; transition:all .15s; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
-      .btn-destructive:hover { background:#fef2f2; }
-      .input { height:40px; padding:0 12px; background:rgb(var(--muted)); border:1px solid rgb(var(--border)); border-radius:10px; font-size:13px; color:rgb(var(--fg)); width:100%; transition:border-color .15s; }
-      .input:focus { outline:none; border-color:rgb(var(--primary)); box-shadow:0 0 0 3px rgba(var(--primary),0.1); }
-      .input::placeholder { color:rgb(var(--muted-fg)); }
-      select.input { cursor:pointer; }
-      textarea.input { height:auto; padding:12px; min-height:80px; resize:vertical; }
-      .badge { display:inline-flex; align-items:center; height:24px; padding:0 8px; border-radius:8px; font-size:12px; font-weight:500; }
-      .badge-neutral { background:rgb(var(--muted)); color:rgb(var(--muted-fg)); }
-      .badge-brand { background:#eff6ff; color:#2563eb; }
-      .dark .badge-brand { background:#1e3a5f; color:#60a5fa; }
-      .badge-success { background:#ecfdf5; color:#059669; }
-      .dark .badge-success { background:#064e3b; color:#34d399; }
-      .badge-warning { background:#fffbeb; color:#d97706; }
-      .dark .badge-warning { background:#451a03; color:#fbbf24; }
-      .badge-destructive { background:#fef2f2; color:#ef4444; }
-      .dark .badge-destructive { background:#450a0a; color:#f87171; }
-      .text-muted { color:rgb(var(--muted-fg)); }
-      .divider { border-top:1px solid rgb(var(--border)); }
-      .hover-muted:hover { background:rgb(var(--muted)); }
-      .transition-base { transition:all .15s ease; }
-      @keyframes slide-in { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
-      .animate-slide-in { animation:slide-in .25s ease-out; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+        font-size: 15px;
+        line-height: 22px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        letter-spacing: -0.01em;
+      }
+
+      /* Apple-style frosted glass header */
+      .nav-glass {
+        background: rgba(var(--card), 0.72);
+        backdrop-filter: saturate(180%) blur(20px);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+      }
+      .dark .nav-glass {
+        background: rgba(var(--card), 0.78);
+      }
+
+      /* Card styles */
+      .card {
+        background: rgb(var(--card));
+        border-radius: 18px;
+        border: 0.5px solid rgba(var(--border), 0.8);
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03), 0 1px 2px -1px rgba(0,0,0,0.02);
+        transition: box-shadow 0.25s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1), border-color 0.25s ease;
+      }
+      .dark .card {
+        border-color: rgba(var(--border), 0.5);
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+      }
+      .card-hover:hover {
+        box-shadow: 0 4px 14px 0 rgba(0,0,0,0.07), 0 1px 2px 0 rgba(0,0,0,0.04);
+        transform: translateY(-1px);
+        border-color: rgba(var(--primary), 0.15);
+      }
+      .dark .card-hover:hover {
+        box-shadow: 0 4px 14px 0 rgba(0,0,0,0.18);
+      }
+
+      /* Primary button */
+      .btn-primary {
+        background: rgb(var(--primary));
+        color: #fff;
+        height: 42px;
+        padding: 0 22px;
+        border-radius: 21px;
+        font-size: 14px;
+        font-weight: 590;
+        letter-spacing: -0.01em;
+        transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-primary:hover {
+        background: rgb(var(--primary-hover));
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(var(--primary), 0.25);
+      }
+      .btn-primary:active {
+        transform: scale(0.98);
+      }
+      .dark .btn-primary:hover {
+        box-shadow: 0 2px 8px rgba(var(--primary), 0.35);
+      }
+
+      /* Secondary button */
+      .btn-secondary {
+        background: rgb(var(--muted));
+        color: rgb(var(--fg));
+        height: 42px;
+        padding: 0 22px;
+        border-radius: 21px;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-secondary:hover {
+        background: rgb(var(--muted-hover));
+      }
+      .btn-secondary:active {
+        transform: scale(0.98);
+      }
+
+      /* Ghost button */
+      .btn-ghost {
+        color: rgb(var(--fg-secondary));
+        height: 36px;
+        padding: 0 14px;
+        border-radius: 18px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+      .btn-ghost:hover {
+        background: rgba(var(--border), 0.4);
+        color: rgb(var(--fg));
+      }
+      .btn-ghost.active {
+        background: rgba(var(--border), 0.5);
+        color: rgb(var(--fg));
+      }
+
+      /* Destructive button */
+      .btn-destructive {
+        background: transparent;
+        color: rgb(var(--danger));
+        height: 42px;
+        padding: 0 22px;
+        border-radius: 21px;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid rgba(var(--danger), 0.2);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-destructive:hover {
+        background: rgb(var(--danger-light));
+      }
+      .btn-destructive:active {
+        transform: scale(0.98);
+      }
+
+      /* Input */
+      .input {
+        height: 42px;
+        padding: 0 14px;
+        background: rgb(var(--muted));
+        border: 1px solid rgba(var(--border), 0.6);
+        border-radius: 12px;
+        font-size: 14px;
+        color: rgb(var(--fg));
+        width: 100%;
+        transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        font-family: inherit;
+        letter-spacing: -0.01em;
+        box-sizing: border-box;
+      }
+      .input:focus {
+        outline: none;
+        border-color: rgb(var(--primary));
+        box-shadow: 0 0 0 4px rgba(var(--primary), 0.1);
+        background: rgb(var(--card));
+      }
+      .input::placeholder {
+        color: rgb(var(--fg-tertiary));
+      }
+      .input:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      select.input {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+      }
+      textarea.input {
+        height: auto;
+        padding: 12px 14px;
+        min-height: 90px;
+        resize: vertical;
+      }
+
+      /* Badge */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        height: 24px;
+        padding: 0 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 590;
+        letter-spacing: 0;
+      }
+      .badge-neutral { background: rgb(var(--muted)); color: rgb(var(--fg-secondary)); }
+      .badge-brand { background: rgb(var(--primary-light)); color: rgb(var(--primary)); }
+      .badge-success { background: rgb(var(--success-light)); color: rgb(var(--success)); }
+      .badge-warning { background: rgb(var(--warning-light)); color: rgb(var(--warning)); }
+      .badge-danger { background: rgb(var(--danger-light)); color: rgb(var(--danger)); }
+      .badge-destructive { background: rgb(var(--danger-light)); color: rgb(var(--danger)); }
+
+      /* Utility */
+      .text-muted { color: rgb(var(--fg-secondary)); }
+      .text-tertiary { color: rgb(var(--fg-tertiary)); }
+      .divider { border-top: 0.5px solid rgba(var(--border), 0.8); }
+      .hover-muted:hover { background: rgba(var(--border), 0.25); }
+      .transition-base { transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+      /* Animations */
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slide-up {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes slide-in-right {
+        from { opacity: 0; transform: translateX(16px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes scale-in {
+        from { opacity: 0; transform: scale(0.96); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .animate-fade-in { animation: fade-in 0.3s ease-out; }
+      .animate-slide-up { animation: slide-up 0.35s cubic-bezier(0.25, 0.1, 0.25, 1); }
+      .animate-slide-in { animation: slide-in-right 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); }
+      .animate-scale-in { animation: scale-in 0.25s cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+      /* Page transition */
+      main {
+        animation: fade-in 0.35s ease-out;
+      }
+
+      /* Subtle gradient for hero/empty states */
+      .hero-gradient {
+        background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(var(--primary), 0.04) 0%, transparent 100%);
+      }
+
+      /* Stats icon ring */
+      .stat-icon-ring {
+        box-shadow: 0 0 0 4px rgba(var(--primary), 0.08);
+      }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block head %}{% endblock %}
 </head>
 <body class="min-h-screen antialiased" style="background:rgb(var(--bg));color:rgb(var(--fg))">
 
 {% if current_user.is_authenticated %}
-<!-- Top Navigation h-56 -->
-<header class="sticky top-0 z-40 border-b" style="background:rgb(var(--card));border-color:rgb(var(--border))">
-  <div class="mx-auto flex items-center justify-between h-14 px-24" style="max-width:1200px">
+<!-- Apple-style frosted glass navigation -->
+<header class="sticky top-0 z-40 nav-glass" style="border-bottom:0.5px solid rgba(var(--border),0.6)">
+  <div class="mx-auto flex items-center justify-between h-14" style="max-width:1160px;padding:0 24px">
     <!-- Logo -->
     <div class="flex items-center gap-12">
-      <a href="{{ url_for('index') }}" class="flex items-center gap-8 transition-base" style="text-decoration:none;color:inherit">
-        <div class="w-8 h-8 flex items-center justify-center rounded-lg" style="background:#2563eb">
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <a href="{{ url_for('index') }}" class="flex items-center gap-8 no-underline" style="color:inherit;text-decoration:none">
+        <div class="w-8 h-8 flex items-center justify-center rounded-xl" style="background:rgb(var(--primary));background:linear-gradient(135deg, rgb(var(--primary)), #5856d6)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10"/><path d="M12 2a15.3 15.3 0 00-4 10 15.3 15.3 0 004 10"/></svg>
         </div>
         <span class="text-base font-semibold tracking-tight">途行旅行社</span>
       </a>
@@ -134,29 +387,30 @@
       {% endif %}
 
       <!-- Theme toggle -->
-      <button onclick="toggleTheme()" class="btn-ghost w-8 h-8 p-0" title="切换主题">
-        <svg class="w-4 h-4" id="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-        <svg class="w-4 h-4 hidden" id="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+      <button onclick="toggleTheme()" class="btn-ghost w-9 h-9 p-0" title="切换主题" aria-label="切换主题">
+        <svg id="sun-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="moon-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="hidden"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       </button>
 
       <!-- User dropdown -->
       <div class="relative group">
-        <button class="flex items-center gap-8 px-8 h-8 rounded-lg hover-muted transition-base text-sm">
-          <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold text-white" style="background:#2563eb">{{ current_user.name[0] }}</div>
+        <button class="flex items-center gap-8 px-8 h-8 rounded-2xl hover-muted transition-base text-sm">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold text-white" style="background:linear-gradient(135deg, rgb(var(--primary)), #5856d6)">{{ current_user.name[0] }}</div>
           <span class="hidden sm:inline font-medium">{{ current_user.name }}</span>
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l4 4 4-4"/></svg>
         </button>
-        <div class="absolute right-0 mt-8 w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-base z-50"
-             style="background:rgb(var(--card));border:1px solid rgb(var(--border));border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+        <div class="absolute right-0 mt-8 w-44 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-base z-50"
+             style="background:rgba(var(--card),0.95);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:0.5px solid rgba(var(--border),0.8);border-radius:16px;padding:6px;box-shadow:0 12px 32px -8px rgba(0,0,0,0.1)">
           {% if not current_user.is_staff %}
-          <a href="{{ url_for('customer.profile') }}" class="flex items-center gap-8 px-12 py-8 text-sm rounded-lg hover-muted transition-base" style="color:rgb(var(--fg));text-decoration:none">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <a href="{{ url_for('customer.profile') }}" class="flex items-center gap-8 px-12 py-8 text-sm rounded-xl hover-muted transition-base" style="color:rgb(var(--fg));text-decoration:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 012-2h6a2 2 0 012 2v1.662"/></svg>
             设置
           </a>
           <div class="my-4 divider"></div>
           {% endif %}
-          <a href="{{ url_for('auth.logout') }}" class="flex items-center gap-8 px-12 py-8 text-sm rounded-lg transition-base" style="color:#ef4444;text-decoration:none">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-            退出
+          <a href="{{ url_for('auth.logout') }}" class="flex items-center gap-8 px-12 py-8 text-sm rounded-xl transition-base" style="color:rgb(var(--danger));text-decoration:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            退出登录
           </a>
         </div>
       </div>
@@ -168,23 +422,23 @@
 <!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
-<div class="fixed top-16 right-16 z-50 flex flex-col gap-8 max-w-sm">
+<div class="fixed top-20 right-20 z-50 flex flex-col gap-8 max-w-sm">
   {% for category, message in messages %}
-  {% set cls = 'badge-success' if category == 'success' else 'badge-destructive' if category == 'danger' else 'badge-warning' if category == 'warning' else 'badge-brand' %}
-  <div class="animate-slide-in flex items-center gap-8 px-16 py-12 card">
+  {% set cls = 'badge-success' if category == 'success' else 'badge-danger' if category == 'danger' else 'badge-warning' if category == 'warning' else 'badge-brand' %}
+  <div class="animate-slide-in flex items-center gap-10 px-18 py-14" style="background:rgba(var(--card),0.95);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:0.5px solid rgba(var(--border),0.8);border-radius:16px;box-shadow:0 12px 32px -8px rgba(0,0,0,0.1)">
     {% if category == 'success' %}
-    <svg class="w-4 h-4 flex-shrink-0" style="color:#059669" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="rgb(var(--success))" stroke="none"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
     {% else %}
-    <svg class="w-4 h-4 flex-shrink-0" style="color:rgb(var(--muted-fg))" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--fg-secondary))" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
     {% endif %}
-    <span class="text-sm">{{ message }}</span>
+    <span class="text-sm font-medium">{{ message }}</span>
   </div>
   {% endfor %}
 </div>
 {% endif %}
 {% endwith %}
 
-<main class="mx-auto px-24 pt-24 pb-48" style="max-width:1200px">
+<main class="mx-auto pt-28 pb-64" style="max-width:1160px;padding-left:24px;padding-right:24px">
 {% block content %}{% endblock %}
 </main>
 

@@ -1,24 +1,43 @@
-{% extends "base.html" %}{% block title %}变更历史 - 途行旅行社{% endblock %}{% block content %}
-<nav class="flex items-center gap-8 text-sm text-muted mb-24">
-  <a href="{{ url_for('admin.routes') }}" class="hover:underline" style="color:inherit;text-decoration:none">路线管理</a>
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+{% extends "base.html" %}{% block title %}变更历史 — 途行旅行社{% endblock %}{% block content %}
+<nav class="flex items-center gap-8 text-sm mb-28" style="color:rgb(var(--fg-secondary))">
+  <a href="{{ url_for('admin.routes') }}" class="no-underline" style="color:inherit">路线管理</a>
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
   <span class="font-medium" style="color:rgb(var(--fg))">{{ route.code }}</span>
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
   <span class="font-medium" style="color:rgb(var(--fg))">变更历史</span>
 </nav>
-<h1 class="text-2xl font-semibold tracking-tight mb-8">路线变更历史</h1>
-<p class="text-sm text-muted mb-24">{{ route.code }} - {{ route.name }}</p>
+
+<div class="mb-28">
+  <h1 class="text-3xl font-bold tracking-tight mb-8">路线变更历史</h1>
+  <p class="text-base" style="color:rgb(var(--fg-secondary))">{{ route.code }} - {{ route.name }}</p>
+</div>
 
 <div class="card overflow-hidden">
   <table class="w-full">
-    <thead><tr style="border-bottom:1px solid rgb(var(--border));background:rgb(var(--muted))"><th class="text-left px-24 py-12 text-xs font-medium text-muted">时间</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">字段</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">旧值</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">新值</th><th class="text-left px-24 py-12 text-xs font-medium text-muted">操作人</th></tr></thead>
-    <tbody>{% for h in history %}<tr class="hover-muted transition-base" style="border-bottom:1px solid rgb(var(--border))">
-      <td class="px-24 py-12 text-sm text-muted">{{ h.changed_at.strftime('%Y-%m-%d %H:%M') }}</td>
-      <td class="px-24 py-12 text-sm font-medium">{{ h.field_name }}</td>
-      <td class="px-24 py-12 text-sm" style="color:#ef4444;text-decoration:line-through">{{ h.old_value }}</td>
-      <td class="px-24 py-12 text-sm font-medium" style="color:#059669">{{ h.new_value }}</td>
-      <td class="px-24 py-12 text-sm text-muted">{% set u = User.query.get(h.changed_by) %}{{ u.name if u else '-' }}</td>
-    </tr>{% else %}<tr><td colspan="5" class="px-24 py-32 text-center text-sm text-muted">暂无变更记录</td></tr>{% endfor %}</tbody>
+    <thead>
+      <tr style="border-bottom:0.5px solid rgba(var(--border),0.6);background:rgb(var(--muted))">
+        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">时间</th>
+        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">字段</th>
+        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">旧值</th>
+        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">新值</th>
+        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">操作人</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for h in history %}
+      <tr class="hover-muted transition-base" style="border-bottom:0.5px solid rgba(var(--border),0.3)">
+        <td class="px-24 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{{ h.changed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td class="px-24 py-14 text-sm font-medium">{{ h.field_name }}</td>
+        <td class="px-24 py-14 text-sm" style="color:rgb(var(--danger))"><s>{{ h.old_value }}</s></td>
+        <td class="px-24 py-14 text-sm font-medium" style="color:rgb(var(--success))">{{ h.new_value }}</td>
+        <td class="px-24 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{% set u = User.query.get(h.changed_by) %}{{ u.name if u else '-' }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" class="px-24 py-36 text-center text-sm" style="color:rgb(var(--fg-secondary))">暂无变更记录</td>
+      </tr>
+      {% endfor %}
+    </tbody>
   </table>
 </div>
 {% endblock %}
