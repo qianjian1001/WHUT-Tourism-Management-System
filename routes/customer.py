@@ -157,7 +157,6 @@ def profile():
         if request.form.get('new_password'):
             if current_user.check_password(request.form['current_password']):
                 current_user.set_password(request.form['new_password'])
-                flash('密码已更新。', 'success')
             else:
                 flash('当前密码错误。', 'danger')
                 return render_template('customer/profile.html')

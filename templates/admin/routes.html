@@ -1,90 +1,167 @@
-{% extends "base.html" %}{% block title %}路线管理 — 途行旅行社{% endblock %}{% block content %}
-<div class="flex items-center justify-between mb-28">
-  <h1 class="text-3xl font-bold tracking-tight">旅游路线管理</h1>
-  <button onclick="document.getElementById('addRouteModal').classList.remove('hidden')" class="btn-primary">+ 新增路线</button>
+{% extends "base.html" %}{% block title %}路线管理 — 途行旅行社{% endblock %}
+{% block breadcrumb %}
+<div class="breadcrumb"><a href="{{ url_for('admin.dashboard') }}">仪表盘</a><span>/</span><span>旅游路线</span></div>
+{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between section-gap">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight mb-2" style="letter-spacing:-0.01em">旅游路线</h1>
+    <p style="color:#86868b;font-size:15px">管理所有旅游路线信息</p>
+  </div>
+  <button onclick="document.getElementById('addRouteModal').classList.remove('hidden')" class="btn-primary">
+    <i class="fa-solid fa-plus text-xs"></i> 新增路线
+  </button>
 </div>
 
-<div class="card overflow-hidden">
-  <table class="w-full">
+<div class="card-gap">
+  <div class="search-apple">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="搜索路线代码、名称或目的地..." oninput="filterTable('routeTable', this.value)">
+  </div>
+</div>
+
+<div class="card-frosted" style="padding:20px 24px">
+  <div class="mobile-scroll">
+  <table class="apple-table" id="routeTable">
     <thead>
-      <tr style="border-bottom:0.5px solid rgba(var(--border),0.6);background:rgb(var(--muted))">
-        <th class="text-left px-20 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">代码</th>
-        <th class="text-left px-20 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">名称</th>
-        <th class="text-left px-20 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">目的地</th>
-        <th class="text-left px-20 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">天数</th>
-        <th class="text-left px-20 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">状态</th>
-        <th class="text-left px-20 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">创建</th>
-        <th class="text-right px-20 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">操作</th>
+      <tr>
+        <th class="text-left px-10 py-10">代码</th>
+        <th class="text-left px-10 py-10">名称</th>
+        <th class="text-left px-10 py-10">目的地</th>
+        <th class="text-left px-10 py-10">天数</th>
+        <th class="text-left px-10 py-10">状态</th>
+        <th class="text-left px-10 py-10">创建</th>
+        <th class="text-right px-10 py-10">操作</th>
       </tr>
     </thead>
     <tbody>
       {% for r in routes %}
-      <tr class="hover-muted transition-base" style="border-bottom:0.5px solid rgba(var(--border),0.3)">
-        <td class="px-20 py-14 text-sm font-medium" style="color:rgb(var(--primary))"><span style="font-variant-numeric:tabular-nums">{{ r.code }}</span></td>
-        <td class="px-20 py-14 text-sm font-medium">{{ r.name }}</td>
-        <td class="px-20 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{{ r.destination or '-' }}</td>
-        <td class="px-20 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{{ r.duration_days }}天</td>
-        <td class="px-20 py-14">
-          {% if r.status == 'active' %}<span class="badge badge-success">启用</span>{% else %}<span class="badge badge-neutral">停用</span>{% endif %}
+      <tr data-search="{{ r.code }} {{ r.name }} {{ r.destination or '' }}">
+        <td class="px-10 py-11"><span class="font-medium" style="color:#007aff;font-size:14px">{{ r.code }}</span></td>
+        <td class="px-10 py-11" style="font-size:14px;font-weight:500">{{ r.name }}</td>
+        <td class="px-10 py-11" style="color:#86868b;font-size:14px">{{ r.destination or '-' }}</td>
+        <td class="px-10 py-11" style="color:#86868b;font-size:14px">{{ r.duration_days }}天</td>
+        <td class="px-10 py-11">
+          {% if r.status == 'active' %}<span class="badge-apple badge-green">启用</span>{% else %}<span class="badge-apple badge-gray">停用</span>{% endif %}
         </td>
-        <td class="px-20 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{{ r.created_at.strftime('%Y-%m-%d') if r.created_at else '-' }}</td>
-        <td class="px-20 py-14 text-right">
-          <div class="flex items-center justify-end gap-4">
-            <button onclick="openEdit('{{ r.id }}','{{ r.name }}','{{ r.destination or '' }}','{{ r.description or '' }}','{{ r.duration_days }}')" class="btn-ghost w-9 h-9 p-0" title="编辑">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            </button>
-            <a href="{{ url_for('admin.toggle_route', id=r.id) }}" class="btn-ghost w-9 h-9 p-0" title="切换">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            </a>
-            <a href="{{ url_for('admin.route_history', id=r.id) }}" class="btn-ghost w-9 h-9 p-0" title="历史">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </a>
+        <td class="px-10 py-11" style="color:#86868b;font-size:14px">{{ r.created_at.strftime('%Y-%m-%d') if r.created_at else '-' }}</td>
+        <td class="px-10 py-11 text-right">
+          <div class="flex items-center justify-end gap-2">
+            <button onclick="openEdit('{{ r.id }}','{{ r.name }}','{{ r.destination or '' }}','{{ r.description or '' }}','{{ r.duration_days }}')" class="btn-icon btn-text" title="编辑"><i class="fa-solid fa-pen-to-square text-sm"></i></button>
+            <a href="{{ url_for('admin.toggle_route', id=r.id) }}" class="btn-icon btn-text" title="切换状态"><i class="fa-solid fa-rotate text-sm"></i></a>
+            <a href="{{ url_for('admin.route_history', id=r.id) }}" class="btn-icon btn-text" title="历史"><i class="fa-solid fa-clock-rotate-left text-sm"></i></a>
           </div>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 
-<!-- Add Route Modal -->
-<div id="addRouteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-24" style="background:rgba(0,0,0,0.2);backdrop-filter:blur(8px)" onclick="if(event.target===this)this.classList.add('hidden')">
-  <div class="animate-scale-in w-full flex flex-col gap-20" style="max-width:460px;background:rgb(var(--card));border-radius:22px;padding:28px;box-shadow:0 20px 60px -12px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04)" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold tracking-tight">新增旅游路线</h3>
-      <button onclick="document.getElementById('addRouteModal').classList.add('hidden')" class="btn-ghost w-9 h-9 p-0">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
+<!-- Add Modal -->
+<div id="addRouteModal" class="hidden modal-backdrop" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="width:520px">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-24">
+      <div class="flex items-center gap-12">
+        <div class="w-10 h-10 flex items-center justify-center rounded-xl" style="background:rgba(0,122,255,0.08)">
+          <i class="fa-solid fa-map text-base" style="color:#007aff"></i>
+        </div>
+        <h3 class="text-lg font-semibold">新增旅游路线</h3>
+      </div>
+      <button onclick="document.getElementById('addRouteModal').classList.add('hidden')" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <form method="POST" action="{{ url_for('admin.add_route') }}" class="flex flex-col gap-14">
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">路线代码</label><input type="text" name="code" class="input" placeholder="如: RT008" required></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">路线名称</label><input type="text" name="name" class="input" required></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">目的地</label><input type="text" name="destination" class="input"></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">天数</label><input type="number" name="duration_days" value="1" min="1" class="input"></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">描述</label><textarea name="description" rows="3" class="input"></textarea></div>
-      <div class="flex gap-12 pt-8">
-        <button type="button" onclick="document.getElementById('addRouteModal').classList.add('hidden')" class="btn-secondary flex-1">取消</button>
-        <button type="submit" class="btn-primary flex-1">保存</button>
+
+    <form method="POST" action="{{ url_for('admin.add_route') }}" style="display:flex;flex-direction:column;gap:16px">
+      <!-- Row 1: code + duration -->
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">路线代码 <span style="color:#ff3b30">*</span></label>
+          <input type="text" name="code" class="input-apple" placeholder="如: RT008" required>
+        </div>
+        <div>
+          <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">行程天数</label>
+          <input type="number" name="duration_days" value="1" min="1" class="input-apple">
+        </div>
+      </div>
+
+      <!-- Row 2: name -->
+      <div>
+        <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">路线名称 <span style="color:#ff3b30">*</span></label>
+        <input type="text" name="name" class="input-apple" placeholder="如: 丽江古城3日游" required>
+      </div>
+
+      <!-- Row 3: destination -->
+      <div>
+        <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">目的地</label>
+        <input type="text" name="destination" class="input-apple" placeholder="如: 云南丽江">
+      </div>
+
+      <!-- Row 4: description -->
+      <div>
+        <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">路线描述</label>
+        <textarea name="description" rows="3" class="input-apple" placeholder="简要描述行程亮点..."></textarea>
+      </div>
+
+      <!-- Divider + actions -->
+      <div style="border-top:1px solid rgba(var(--border),0.5);padding-top:16px;margin-top:4px">
+        <div class="flex gap-12">
+          <button type="button" onclick="document.getElementById('addRouteModal').classList.add('hidden')" class="btn-ghost flex-1">取消</button>
+          <button type="submit" class="btn-primary flex-1">保存路线</button>
+        </div>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Edit Route Modal -->
-<div id="editRouteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-24" style="background:rgba(0,0,0,0.2);backdrop-filter:blur(8px)" onclick="if(event.target===this)this.classList.add('hidden')">
-  <div class="animate-scale-in w-full flex flex-col gap-20" style="max-width:460px;background:rgb(var(--card));border-radius:22px;padding:28px;box-shadow:0 20px 60px -12px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04)" onclick="event.stopPropagation()">
-    <h3 class="text-lg font-semibold tracking-tight">编辑路线: <span id="editCode" style="color:rgb(var(--primary))"></span></h3>
-    <form id="editForm" method="POST" class="flex flex-col gap-14">
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">路线名称</label><input type="text" name="name" id="editName" class="input" required></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">目的地</label><input type="text" name="destination" id="editDest" class="input"></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">天数</label><input type="number" name="duration_days" id="editDur" min="1" class="input"></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">描述</label><textarea name="description" id="editDesc" rows="3" class="input"></textarea></div>
-      <div class="flex gap-12 pt-8">
-        <button type="button" onclick="document.getElementById('editRouteModal').classList.add('hidden')" class="btn-secondary flex-1">取消</button>
-        <button type="submit" class="btn-primary flex-1">保存变更</button>
+<!-- Edit Modal -->
+<div id="editRouteModal" class="hidden modal-backdrop" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="width:520px">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-24">
+      <div class="flex items-center gap-12">
+        <div class="w-10 h-10 flex items-center justify-center rounded-xl" style="background:rgba(0,122,255,0.08)">
+          <i class="fa-solid fa-pen-to-square text-base" style="color:#007aff"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold">编辑路线</h3>
+          <p class="text-xs" style="color:rgb(var(--fg-secondary));margin-top:2px">代码: <span id="editCode" style="color:#007aff;font-weight:600"></span></p>
+        </div>
+      </div>
+      <button onclick="document.getElementById('editRouteModal').classList.add('hidden')" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <form id="editForm" method="POST" style="display:flex;flex-direction:column;gap:16px">
+      <div>
+        <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">路线名称 <span style="color:#ff3b30">*</span></label>
+        <input type="text" name="name" id="editName" class="input-apple" required>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">目的地</label>
+          <input type="text" name="destination" id="editDest" class="input-apple">
+        </div>
+        <div>
+          <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">行程天数</label>
+          <input type="number" name="duration_days" id="editDur" min="1" class="input-apple">
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">路线描述</label>
+        <textarea name="description" id="editDesc" rows="3" class="input-apple"></textarea>
+      </div>
+
+      <div style="border-top:1px solid rgba(var(--border),0.5);padding-top:16px;margin-top:4px">
+        <div class="flex gap-12">
+          <button type="button" onclick="document.getElementById('editRouteModal').classList.add('hidden')" class="btn-ghost flex-1">取消</button>
+          <button type="submit" class="btn-primary flex-1">保存变更</button>
+        </div>
       </div>
     </form>
   </div>
 </div>
+
 <script>function openEdit(id,name,dest,desc,dur){document.getElementById('editForm').action='/admin/routes/'+id+'/edit';document.getElementById('editCode').textContent=id;document.getElementById('editName').value=name;document.getElementById('editDest').value=dest;document.getElementById('editDesc').value=desc;document.getElementById('editDur').value=dur;document.getElementById('editRouteModal').classList.remove('hidden')}</script>
 {% endblock %}

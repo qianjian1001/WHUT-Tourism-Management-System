@@ -1,43 +1,44 @@
 {% extends "base.html" %}{% block title %}注册 — 途行旅行社{% endblock %}{% block content %}
 <div class="flex items-center justify-center" style="min-height:70vh">
-  <div class="w-full flex flex-col gap-28" style="max-width:440px">
+  <div style="width:100%;max-width:440px">
+
     <!-- Header -->
-    <div class="flex flex-col items-center gap-12 animate-slide-up">
-      <div class="w-16 h-16 flex items-center justify-center rounded-2xl shadow-sm" style="background:linear-gradient(135deg, rgb(var(--primary)), #5856d6)">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+    <div style="text-align:center;margin-bottom:28px">
+      <div class="w-16 h-16 flex items-center justify-center rounded-md mx-auto mb-16" style="background:linear-gradient(135deg, #007aff, #5856d6);box-shadow:0 1px 4px rgba(0,0,0,0.08)">
+        <i class="fa-solid fa-horse-head text-white" style="font-size:22px"></i>
       </div>
-      <h2 class="text-2xl font-bold tracking-tight">创建新账户</h2>
-      <p class="text-base" style="color:rgb(var(--fg-secondary))">加入途行旅行社，开启美好旅程</p>
+      <h2 class="text-2xl font-bold tracking-tight mb-6">创建新账户</h2>
+      <p style="color:#86868b;font-size:15px">加入途行旅行社，开启美好旅程</p>
     </div>
 
     <!-- Form card -->
-    <div class="card p-28 animate-slide-up" style="animation-delay:0.05s">
-      <form method="POST" class="flex flex-col gap-18">
-        <div class="flex flex-col gap-6">
-          <label class="text-sm font-medium">用户名</label>
-          <input type="text" name="username" class="input" placeholder="设置登录用户名" required>
+    <div class="card-frosted" style="padding:24px 28px">
+      <form method="POST" style="display:flex;flex-direction:column;gap:18px">
+        <div>
+          <label class="text-sm font-medium mb-2 block">用户名</label>
+          <input type="text" name="username" class="input-apple" placeholder="设置登录用户名" required>
         </div>
-        <div class="flex flex-col gap-6">
-          <label class="text-sm font-medium">密码</label>
-          <input type="password" name="password" class="input" placeholder="设置密码" required>
+        <div>
+          <label class="text-sm font-medium mb-2 block">密码</label>
+          <input type="password" name="password" class="input-apple" placeholder="设置密码" required>
         </div>
-        <div class="grid grid-cols-2 gap-14">
-          <div class="flex flex-col gap-6">
-            <label class="text-sm font-medium">姓名</label>
-            <input type="text" name="name" class="input" placeholder="真实姓名" required>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:18px">
+          <div>
+            <label class="text-sm font-medium mb-2 block">姓名</label>
+            <input type="text" name="name" class="input-apple" placeholder="真实姓名" required>
           </div>
-          <div class="flex flex-col gap-6">
-            <label class="text-sm font-medium">电话</label>
-            <input type="text" name="phone" class="input" placeholder="联系电话">
+          <div>
+            <label class="text-sm font-medium mb-2 block">电话</label>
+            <input type="text" name="phone" class="input-apple" placeholder="联系电话">
           </div>
         </div>
-        <div class="flex flex-col gap-6">
-          <label class="text-sm font-medium">邮箱 <span class="font-normal" style="color:rgb(var(--fg-tertiary))">(选填)</span></label>
-          <input type="email" name="email" class="input" placeholder="电子邮箱">
+        <div>
+          <label class="text-sm font-medium mb-2 block">邮箱 <span style="color:#aeaeb2;font-weight:400">(选填)</span></label>
+          <input type="email" name="email" class="input-apple" placeholder="电子邮箱">
         </div>
-        <button type="submit" class="btn-primary w-full mt-4">创建账户</button>
-        <p class="text-sm text-center" style="color:rgb(var(--fg-secondary))">
-          已有账户？<a href="{{ url_for('auth.login') }}" style="color:rgb(var(--primary));text-decoration:none;font-weight:500">立即登录</a>
+        <button type="submit" class="btn-primary w-full">创建账户</button>
+        <p style="color:#86868b;font-size:14px;text-align:center">
+          已有账户？<a href="{{ url_for('auth.login') }}" style="color:#007aff;text-decoration:none;font-weight:500">立即登录</a>
         </p>
       </form>
     </div>

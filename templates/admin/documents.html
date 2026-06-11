@@ -1,47 +1,57 @@
-{% extends "base.html" %}{% block title %}日常文件生成 — 途行旅行社{% endblock %}{% block content %}
-<div class="mb-28">
-  <h1 class="text-3xl font-bold tracking-tight mb-8">每日文件生成</h1>
-  <p class="text-base" style="color:rgb(var(--fg-secondary))">前一天已完成申请的旅游确认书和余额交款单 — {{ yesterday }}</p>
+{% extends "base.html" %}{% block title %}日常文件生成 — 途行旅行社{% endblock %}
+{% block breadcrumb %}
+<div class="breadcrumb"><a href="{{ url_for('admin.dashboard') }}">仪表盘</a><span>/</span><span>日常文件</span></div>
+{% endblock %}
+{% block content %}
+
+<div class="section-gap">
+  <h1 class="text-2xl font-semibold tracking-tight mb-2" style="letter-spacing:-0.01em">每日文件生成</h1>
+  <p style="color:#86868b;font-size:15px">前一天已完成申请的旅游确认书和余额交款单 — {{ yesterday }}</p>
 </div>
 
-<div class="card overflow-hidden">
+<div class="card-frosted" style="padding:20px 24px">
   {% if bookings %}
-  <table class="w-full">
+  <div class="mobile-scroll">
+  <table class="apple-table">
     <thead>
-      <tr style="border-bottom:0.5px solid rgba(var(--border),0.6);background:rgb(var(--muted))">
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">编号</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">申请人</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">旅游团</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">总额</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">余款</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">打印文件</th>
+      <tr>
+        <th class="text-left px-10 py-10">编号</th>
+        <th class="text-left px-10 py-10">申请人</th>
+        <th class="text-left px-10 py-10">旅游团</th>
+        <th class="text-left px-10 py-10">总额</th>
+        <th class="text-left px-10 py-10">余款</th>
+        <th class="text-left px-10 py-10">打印文件</th>
       </tr>
     </thead>
     <tbody>
       {% for b in bookings %}
-      <tr style="border-bottom:0.5px solid rgba(var(--border),0.3)">
-        <td class="px-24 py-14 text-sm font-medium" style="color:rgb(var(--primary))"><span style="font-variant-numeric:tabular-nums">{{ b.booking_no }}</span></td>
-        <td class="px-24 py-14 text-sm">{{ b.applicant_name }}</td>
-        <td class="px-24 py-14 text-sm">{{ b.tour_group.code if b.tour_group }}</td>
-        <td class="px-24 py-14 text-sm">¥{{ "%.0f"|format(b.total_amount) }}</td>
-        <td class="px-24 py-14 text-sm">¥{{ "%.0f"|format(b.balance_amount) }}</td>
-        <td class="px-24 py-14">
-          {% if b.balance_amount <= 0 %}<span class="badge badge-success">仅确认书</span>{% else %}<span class="badge badge-warning">确认书+交款单</span>{% endif %}
+      <tr>
+        <td class="px-10 py-11" style="font-size:14px"><a href="#" class="no-underline font-medium" style="color:#007aff">{{ b.booking_no }}</a></td>
+        <td class="px-10 py-11" style="font-size:14px">{{ b.applicant_name }}</td>
+        <td class="px-10 py-11" style="font-size:14px">{{ b.tour_group.code if b.tour_group }}</td>
+        <td class="px-10 py-11" style="font-size:14px">¥{{ "%.0f"|format(b.total_amount) }}</td>
+        <td class="px-10 py-11" style="font-size:14px">¥{{ "%.0f"|format(b.balance_amount) }}</td>
+        <td class="px-10 py-11">
+          {% if b.balance_amount <= 0 %}<span class="badge-apple badge-green">仅确认书</span>{% else %}<span class="badge-apple badge-orange">确认书+交款单</span>{% endif %}
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-  <div class="p-24 flex items-start gap-10" style="background:rgb(var(--primary-light));margin:16px;border-radius:16px">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--primary))" stroke-width="1.6" stroke-linecap="round" class="flex-shrink-0 mt-1"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-    <div class="text-sm" style="color:rgb(var(--primary))">
-      <p class="font-semibold mb-8">操作指引</p>
-      {% for b in bookings %}<p class="mb-4">{{ b.booking_no }}: 打印<strong>{% if b.balance_amount <= 0 %}旅游确认书{% else %}旅游确认书 + 余额交款单{% endif %}</strong></p>{% endfor %}
-      <p class="mt-8">请装入信封，书写收件人，邮寄给申请人。</p>
+  </div>
+  <div class="flex items-start gap-10" style="background:rgba(0,122,255,0.05);padding:14px 16px;border-radius:8px;margin-top:16px">
+    <i class="fa-solid fa-circle-info text-sm flex-shrink-0 mt-2" style="color:#007aff"></i>
+    <div style="font-size:13px;color:#007aff;line-height:1.6">
+      <p class="font-semibold mb-6">操作指引</p>
+      {% for b in bookings %}<p class="mb-2">{{ b.booking_no }}: 打印<strong>{% if b.balance_amount <= 0 %}旅游确认书{% else %}旅游确认书 + 余额交款单{% endif %}</strong></p>{% endfor %}
+      <p class="mt-6">请装入信封，书写收件人，邮寄给申请人。</p>
     </div>
   </div>
   {% else %}
-  <div class="py-36 text-center text-sm" style="color:rgb(var(--fg-secondary))">暂无完成的申请</div>
+  <div class="empty-state">
+    <i class="fa-regular fa-file-lines" style="font-size:24px;color:#86868b;opacity:0.3"></i>
+    <p style="color:#86868b;font-size:14px">暂无完成的申请</p>
+  </div>
   {% endif %}
 </div>
 {% endblock %}

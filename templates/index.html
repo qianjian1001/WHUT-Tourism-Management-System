@@ -1,43 +1,360 @@
-{% extends "base.html" %}{% block title %}途行旅行社 — 开启旅程{% endblock %}{% block content %}
+{% extends "base.html" %}{% block title %}途行旅行社 — 开启旅程{% endblock %}{% block head %}
+<style>
+  html, body { min-height: 100vh; margin: 0; }
+  body {
+    background: linear-gradient(160deg, #f0f4ff 0%, #e8ecfa 20%, #eef0ff 40%, #f2e8fa 65%, #f5f0ff 85%, #f8f4ff 100%) !important;
+    background-attachment: fixed;
+  }
+
+  /* ---- Full-screen bg layer ---- */
+  .bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+  .bg-layer::before {
+    content: ''; position: absolute; top: -20%; left: -10%;
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,122,255,0.16) 0%, rgba(0,122,255,0.03) 45%, transparent 70%);
+  }
+  .bg-layer::after {
+    content: ''; position: absolute; bottom: -15%; right: -8%;
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(88,86,214,0.14) 0%, rgba(88,86,214,0.03) 45%, transparent 70%);
+  }
+
+  /* ---- Corner decorations ---- */
+  .corner-deco {
+    position: fixed; pointer-events: none; z-index: 0;
+    width: 180px; height: 180px; opacity: 0.5;
+  }
+  .corner-deco svg { width: 100%; height: 100%; }
+  .corner-deco.tl { top: 0; left: 0; }
+  .corner-deco.br { bottom: 0; right: 0; transform: rotate(180deg); }
+
+  /* ---- Floating shapes ---- */
+  .float-shape {
+    position: fixed; pointer-events: none; z-index: 0;
+    border-radius: 50%;
+    animation: floatDrift 10s ease-in-out infinite;
+  }
+  .float-shape.s1 {
+    width: 12px; height: 12px; top: 6%; right: 18%;
+    background: rgba(0,122,255,0.12);
+    animation-delay: 0s;
+  }
+  .float-shape.s2 {
+    width: 8px; height: 8px; top: 18%; left: 6%;
+    background: rgba(255,149,0,0.10);
+    animation-delay: 1.5s;
+  }
+  .float-shape.s3 {
+    width: 16px; height: 16px; top: 45%; right: 8%;
+    background: rgba(88,86,214,0.10);
+    animation-delay: 3s;
+  }
+  .float-shape.s4 {
+    width: 6px; height: 6px; bottom: 25%; left: 14%;
+    background: rgba(0,122,255,0.14);
+    animation-delay: 5s;
+  }
+  .float-shape.s5 {
+    width: 10px; height: 10px; bottom: 18%; right: 22%;
+    background: rgba(255,149,0,0.08);
+    animation-delay: 7s;
+  }
+
+  /* ---- Floating rings ---- */
+  .float-ring {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+    border: 1px solid rgba(0,122,255,0.06);
+    animation: floatDrift 12s ease-in-out infinite;
+  }
+  .float-ring.r1 { width: 120px; height: 120px; top: 8%; left: 5%; animation-delay: 0s; }
+  .float-ring.r2 { width: 80px; height: 80px; top: 25%; right: 6%; animation-delay: 2s; border-color: rgba(88,86,214,0.06); }
+  .float-ring.r3 { width: 56px; height: 56px; top: 55%; left: 8%; animation-delay: 4s; border-color: rgba(255,149,0,0.05); }
+  .float-ring.r4 { width: 90px; height: 90px; bottom: 10%; right: 24%; animation-delay: 6s; border-color: rgba(0,122,255,0.05); }
+  .float-ring.r5 { width: 48px; height: 48px; bottom: 30%; left: 22%; animation-delay: 8s; border-color: rgba(88,86,214,0.06); }
+
+  @keyframes floatDrift {
+    0%, 100% { transform: translateY(0) translateX(0) scale(1); }
+    25%      { transform: translateY(-15px) translateX(6px) scale(1.06); }
+    50%      { transform: translateY(-8px) translateX(-4px) scale(0.95); }
+    75%      { transform: translateY(10px) translateX(-8px) scale(1.04); }
+  }
+
+  /* ---- Constellation dots ---- */
+  .constellation {
+    position: fixed; pointer-events: none; z-index: 0; opacity: 0.35;
+  }
+  .constellation.c1 { top: 14%; right: 30%; }
+  .constellation.c2 { bottom: 22%; left: 28%; }
+  .constellation svg { display: block; }
+
+  /* ---- Content ---- */
+  .hero-content { position: relative; z-index: 1; }
+
+  .icon-glow {
+    position: absolute; inset: -12px; border-radius: 24px;
+    background: radial-gradient(circle, rgba(0,122,255,0.25) 0%, transparent 70%);
+    animation: glowPulse 3s ease-in-out infinite; z-index: -1;
+  }
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.95); }
+    50%      { opacity: 0.8; transform: scale(1.05); }
+  }
+
+  .title-gradient {
+    background: linear-gradient(135deg, #1d1d1f 0%, #3a3a5c 50%, #007aff 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Bottom wave */
+  .wave-divider {
+    position: fixed; bottom: 0; left: 0; right: 0; pointer-events: none; z-index: 0;
+  }
+  .wave-divider svg { display: block; width: 100%; height: auto; }
+</style>
+{% endblock %}{% block content %}
 {% if not current_user.is_authenticated %}
-<div class="flex flex-col items-center justify-center text-center" style="min-height:75vh;padding:40px 0">
-  <!-- Hero -->
-  <div class="flex flex-col items-center gap-24 animate-slide-up" style="max-width:520px">
-    <div class="w-20 h-20 flex items-center justify-center rounded-3xl shadow-sm" style="background:linear-gradient(135deg, rgb(var(--primary)), #5856d6)">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10"/><path d="M12 2a15.3 15.3 0 00-4 10 15.3 15.3 0 004 10"/></svg>
+
+<!-- Background glow layer -->
+<div class="bg-layer"></div>
+
+<!-- Corner arc decorations -->
+<div class="corner-deco tl">
+  <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 0 L120 0 A120 120 0 0 0 0 120 Z" fill="rgba(0,122,255,0.03)"/>
+    <circle cx="0" cy="0" r="1.5" fill="rgba(0,122,255,0.15)"/>
+  </svg>
+</div>
+<div class="corner-deco br">
+  <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 0 L120 0 A120 120 0 0 0 0 120 Z" fill="rgba(88,86,214,0.03)"/>
+    <circle cx="0" cy="0" r="1.5" fill="rgba(88,86,214,0.15)"/>
+  </svg>
+</div>
+
+<!-- Floating shapes (small dots) -->
+<div class="float-shape s1"></div>
+<div class="float-shape s2"></div>
+<div class="float-shape s3"></div>
+<div class="float-shape s4"></div>
+<div class="float-shape s5"></div>
+
+<!-- Floating rings -->
+<div class="float-ring r1"></div>
+<div class="float-ring r2"></div>
+<div class="float-ring r3"></div>
+<div class="float-ring r4"></div>
+<div class="float-ring r5"></div>
+
+<!-- Constellation decorations -->
+<div class="constellation c1">
+  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="6" cy="6" r="1.5" fill="rgba(0,122,255,0.3)"/>
+    <circle cx="30" cy="14" r="1" fill="rgba(0,122,255,0.2)"/>
+    <circle cx="50" cy="8" r="1.5" fill="rgba(88,86,214,0.25)"/>
+    <circle cx="10" cy="44" r="1" fill="rgba(88,86,214,0.2)"/>
+    <circle cx="40" cy="38" r="1.2" fill="rgba(0,122,255,0.22)"/>
+    <circle cx="52" cy="50" r="1" fill="rgba(0,122,255,0.18)"/>
+    <line x1="6" y1="6" x2="30" y2="14" stroke="rgba(0,122,255,0.12)" stroke-width="0.6"/>
+    <line x1="30" y1="14" x2="50" y2="8" stroke="rgba(0,122,255,0.12)" stroke-width="0.6"/>
+    <line x1="10" y1="44" x2="40" y2="38" stroke="rgba(88,86,214,0.10)" stroke-width="0.6"/>
+    <line x1="40" y1="38" x2="52" y2="50" stroke="rgba(88,86,214,0.10)" stroke-width="0.6"/>
+  </svg>
+</div>
+<div class="constellation c2">
+  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="8" cy="12" r="1.5" fill="rgba(0,122,255,0.25)"/>
+    <circle cx="28" cy="6" r="1" fill="rgba(88,86,214,0.22)"/>
+    <circle cx="44" cy="18" r="1.2" fill="rgba(0,122,255,0.20)"/>
+    <circle cx="14" cy="34" r="1" fill="rgba(0,122,255,0.18)"/>
+    <circle cx="36" cy="48" r="1.3" fill="rgba(88,86,214,0.22)"/>
+    <line x1="8" y1="12" x2="28" y2="6" stroke="rgba(0,122,255,0.10)" stroke-width="0.6"/>
+    <line x1="28" y1="6" x2="44" y2="18" stroke="rgba(0,122,255,0.10)" stroke-width="0.6"/>
+    <line x1="14" y1="34" x2="36" y2="48" stroke="rgba(88,86,214,0.10)" stroke-width="0.6"/>
+  </svg>
+</div>
+
+<!-- Bottom wave -->
+<div class="wave-divider">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 40 C240 60, 480 0, 720 30 C960 60, 1200 10, 1440 35 L1440 80 L0 80 Z" fill="rgba(255,255,255,0.30)"/>
+  </svg>
+</div>
+
+<!-- Content -->
+<div class="hero-content" style="padding:32px 0">
+
+  <!-- ===== Hero ===== -->
+  <div class="flex flex-col items-center text-center" style="min-height:65vh;justify-content:center">
+    <div class="flex flex-col items-center gap-18 animate-slide-up" style="max-width:460px">
+      <div style="position:relative">
+        <div class="icon-glow"></div>
+        <div class="w-16 h-16 flex items-center justify-center rounded-3xl shadow-sm mb-8 relative" style="background:linear-gradient(135deg, #007aff, #5856d6)">
+          <i class="fa-solid fa-horse-head text-white" style="font-size:26px"></i>
+        </div>
+      </div>
+      <div class="flex flex-col gap-8">
+        <h1 class="text-3xl font-bold tracking-tight title-gradient" style="letter-spacing:-0.025em">途行旅行社</h1>
+        <p class="text-base" style="color:#86868b;line-height:1.6">专业的组团旅游服务，智能化的业务管理系统<br>让每一次旅行都成为美好回忆</p>
+      </div>
+      <div class="flex items-center gap-10 pt-4">
+        <a href="{{ url_for('auth.login') }}" class="btn-primary" style="text-decoration:none;padding:0 26px">开始使用</a>
+        <a href="{{ url_for('auth.register') }}" class="btn-ghost" style="text-decoration:none">注册账户</a>
+      </div>
     </div>
-    <div class="flex flex-col gap-12">
-      <h1 class="text-4xl font-bold tracking-tight" style="letter-spacing:-0.025em">途行旅行社</h1>
-      <p class="text-lg" style="color:rgb(var(--fg-secondary));line-height:1.6">专业的组团旅游服务，智能化的业务管理系统<br>让每一次旅行都成为美好回忆</p>
-    </div>
-    <div class="flex items-center gap-12 pt-8">
-      <a href="{{ url_for('auth.login') }}" class="btn-primary" style="text-decoration:none;padding:0 28px">开始使用</a>
-      <a href="{{ url_for('auth.register') }}" class="btn-secondary" style="text-decoration:none">注册账户</a>
+
+    <!-- Stats bar -->
+    <div style="margin-top:48px;padding:28px 0;width:100%;max-width:600px;border-radius:24px;background:rgba(255,255,255,0.50);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.60)">
+      <div class="grid gap-24" style="grid-template-columns:repeat(4,1fr);margin:0 auto;max-width:560px">
+        <div class="flex flex-col items-center gap-6">
+          <span class="text-2xl font-bold tracking-tight" style="color:#007aff">7+</span>
+          <span class="text-xs" style="color:#86868b">精选路线</span>
+        </div>
+        <div class="flex flex-col items-center gap-6">
+          <span class="text-2xl font-bold tracking-tight" style="color:#007aff">30+</span>
+          <span class="text-xs" style="color:#86868b">发团记录</span>
+        </div>
+        <div class="flex flex-col items-center gap-6">
+          <span class="text-2xl font-bold tracking-tight" style="color:#007aff">500+</span>
+          <span class="text-xs" style="color:#86868b">满意游客</span>
+        </div>
+        <div class="flex flex-col items-center gap-6">
+          <span class="text-2xl font-bold tracking-tight" style="color:#007aff">98%</span>
+          <span class="text-xs" style="color:#86868b">好评率</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="hero-gradient" style="margin-top:80px;padding:48px 0;width:100%;border-radius:24px">
-    <div class="grid gap-32" style="grid-template-columns:repeat(4,1fr);max-width:640px;margin:0 auto">
-      <div class="flex flex-col items-center gap-8">
-        <span class="text-4xl font-bold tracking-tight" style="color:rgb(var(--primary))">7+</span>
-        <span class="text-sm" style="color:rgb(var(--fg-secondary))">精选路线</span>
+  <!-- ===== Why Us ===== -->
+  <div style="max-width:900px;margin:0 auto;padding:48px 0">
+    <div class="text-center mb-32">
+      <h2 class="text-2xl font-semibold tracking-tight mb-8">为什么选择我们</h2>
+      <p style="color:#86868b;font-size:15px">致力于为每一位客户打造安心、透明、高品质的旅行体验</p>
+    </div>
+    <div class="grid gap-24" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card-frosted" style="padding:28px 24px;text-align:center">
+        <div class="w-10 h-10 flex items-center justify-center rounded-xl mb-16 mx-auto" style="background:rgba(0,122,255,0.08)">
+          <i class="fa-solid fa-shield-halved" style="color:#007aff;font-size:18px"></i>
+        </div>
+        <h3 class="text-base font-semibold mb-6">正规资质保障</h3>
+        <p style="color:#86868b;font-size:14px;line-height:1.5">持有国家旅游局颁发的旅行社业务经营许可证，所有行程签订正规旅游合同</p>
       </div>
-      <div class="flex flex-col items-center gap-8">
-        <span class="text-4xl font-bold tracking-tight" style="color:rgb(var(--primary))">透明</span>
-        <span class="text-sm" style="color:rgb(var(--fg-secondary))">价格公开</span>
+      <div class="card-frosted" style="padding:28px 24px;text-align:center">
+        <div class="w-10 h-10 flex items-center justify-center rounded-xl mb-16 mx-auto" style="background:rgba(52,199,89,0.08)">
+          <i class="fa-solid fa-coins" style="color:#34c759;font-size:18px"></i>
+        </div>
+        <h3 class="text-base font-semibold mb-6">价格透明公开</h3>
+        <p style="color:#86868b;font-size:14px;line-height:1.5">所有旅游团价格提前发布，无隐藏费用，订金与余款分阶段支付更灵活</p>
       </div>
-      <div class="flex flex-col items-center gap-8">
-        <span class="text-4xl font-bold tracking-tight" style="color:rgb(var(--primary))">灵活</span>
-        <span class="text-sm" style="color:rgb(var(--fg-secondary))">组团方式</span>
-      </div>
-      <div class="flex flex-col items-center gap-8">
-        <span class="text-4xl font-bold tracking-tight" style="color:rgb(var(--primary))">安心</span>
-        <span class="text-sm" style="color:rgb(var(--fg-secondary))">全程保障</span>
+      <div class="card-frosted" style="padding:28px 24px;text-align:center">
+        <div class="w-10 h-10 flex items-center justify-center rounded-xl mb-16 mx-auto" style="background:rgba(255,149,0,0.08)">
+          <i class="fa-solid fa-headset" style="color:#ff9500;font-size:18px"></i>
+        </div>
+        <h3 class="text-base font-semibold mb-6">全程贴心服务</h3>
+        <p style="color:#86868b;font-size:14px;line-height:1.5">专业导游全程陪同，24小时客服在线，出发前提供详细行程手册</p>
       </div>
     </div>
   </div>
+
+  <!-- ===== Hot Routes ===== -->
+  <div style="max-width:900px;margin:0 auto;padding:48px 0">
+    <div class="text-center mb-32">
+      <h2 class="text-2xl font-semibold tracking-tight mb-8">热门旅游路线</h2>
+      <p style="color:#86868b;font-size:15px">覆盖国内多个热门旅游目的地，总有一条适合您</p>
+    </div>
+    <div class="grid gap-20" style="grid-template-columns:repeat(4,1fr)">
+      <div class="card-frosted card-lift" style="padding:0;overflow:hidden">
+        <div style="height:100px;background:linear-gradient(135deg, #e3f2fd, #bbdefb);display:flex;align-items:center;justify-content:center">
+          <i class="fa-solid fa-mountain" style="font-size:32px;color:#007aff;opacity:0.5"></i>
+        </div>
+        <div style="padding:16px">
+          <h4 class="text-sm font-semibold mb-4">丽江古城 3 日游</h4>
+          <p style="color:#86868b;font-size:13px">古城 · 玉龙雪山 · 束河古镇</p>
+          <div style="margin-top:10px;font-size:14px;font-weight:600;color:#007aff">¥2,800 起</div>
+        </div>
+      </div>
+      <div class="card-frosted card-lift" style="padding:0;overflow:hidden">
+        <div style="height:100px;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);display:flex;align-items:center;justify-content:center">
+          <i class="fa-solid fa-umbrella-beach" style="font-size:32px;color:#34c759;opacity:0.5"></i>
+        </div>
+        <div style="padding:16px">
+          <h4 class="text-sm font-semibold mb-4">三亚海滨 5 日游</h4>
+          <p style="color:#86868b;font-size:13px">阳光沙滩 · 潜水 · 海岛</p>
+          <div style="margin-top:10px;font-size:14px;font-weight:600;color:#007aff">¥4,800 起</div>
+        </div>
+      </div>
+      <div class="card-frosted card-lift" style="padding:0;overflow:hidden">
+        <div style="height:100px;background:linear-gradient(135deg, #fff3e0, #ffe0b2);display:flex;align-items:center;justify-content:center">
+          <i class="fa-solid fa-landmark" style="font-size:32px;color:#ff9500;opacity:0.5"></i>
+        </div>
+        <div style="padding:16px">
+          <h4 class="text-sm font-semibold mb-4">西安历史 4 日游</h4>
+          <p style="color:#86868b;font-size:13px">兵马俑 · 大雁塔 · 古城墙</p>
+          <div style="margin-top:10px;font-size:14px;font-weight:600;color:#007aff">¥3,200 起</div>
+        </div>
+      </div>
+      <div class="card-frosted card-lift" style="padding:0;overflow:hidden">
+        <div style="height:100px;background:linear-gradient(135deg, #ede7f6, #d1c4e9);display:flex;align-items:center;justify-content:center">
+          <i class="fa-solid fa-leaf" style="font-size:32px;color:#5856d6;opacity:0.5"></i>
+        </div>
+        <div style="padding:16px">
+          <h4 class="text-sm font-semibold mb-4">张家界 4 日游</h4>
+          <p style="color:#86868b;font-size:13px">袁家界 · 天门山 · 玻璃栈道</p>
+          <div style="margin-top:10px;font-size:14px;font-weight:600;color:#007aff">¥3,500 起</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== How It Works ===== -->
+  <div style="max-width:700px;margin:0 auto;padding:48px 0;text-align:center">
+    <h2 class="text-2xl font-semibold tracking-tight mb-32">预订流程</h2>
+    <div class="grid gap-24" style="grid-template-columns:repeat(4,1fr)">
+      <div class="flex flex-col items-center gap-10">
+        <div class="w-11 h-11 flex items-center justify-center rounded-full text-sm font-semibold" style="background:rgba(0,122,255,0.08);color:#007aff">1</div>
+        <div>
+          <h4 class="text-sm font-semibold mb-4">浏览路线</h4>
+          <p style="color:#86868b;font-size:13px">查看可选旅游团及详情</p>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-10">
+        <div class="w-11 h-11 flex items-center justify-center rounded-full text-sm font-semibold" style="background:rgba(0,122,255,0.08);color:#007aff">2</div>
+        <div>
+          <h4 class="text-sm font-semibold mb-4">在线预订</h4>
+          <p style="color:#86868b;font-size:13px">填写信息提交报名申请</p>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-10">
+        <div class="w-11 h-11 flex items-center justify-center rounded-full text-sm font-semibold" style="background:rgba(0,122,255,0.08);color:#007aff">3</div>
+        <div>
+          <h4 class="text-sm font-semibold mb-4">支付订金</h4>
+          <p style="color:#86868b;font-size:13px">前往门店确认并支付订金</p>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-10">
+        <div class="w-11 h-11 flex items-center justify-center rounded-full text-sm font-semibold" style="background:rgba(0,122,255,0.08);color:#007aff">4</div>
+        <div>
+          <h4 class="text-sm font-semibold mb-4">开心出游</h4>
+          <p style="color:#86868b;font-size:13px">出发前付余款，安心出行</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CTA ===== -->
+  <div style="max-width:500px;margin:32px auto 64px;text-align:center">
+    <div class="card-frosted" style="padding:36px 24px">
+      <h2 class="text-xl font-semibold mb-8">准备好开启旅程了吗？</h2>
+      <p style="color:#86868b;font-size:14px;margin-bottom:20px">注册账户即可浏览全部旅游团，在线预订您的理想之旅</p>
+      <a href="{{ url_for('auth.register') }}" class="btn-primary" style="text-decoration:none;padding:0 32px">免费注册</a>
+      <p style="margin-top:14px;font-size:13px;color:#86868b">已有账户？<a href="{{ url_for('auth.login') }}" style="color:#007aff;text-decoration:none;font-weight:500">立即登录</a></p>
+    </div>
+  </div>
+
 </div>
+
 {% else %}
 {% if current_user.is_staff %}<script>window.location.href="{{ url_for('admin.dashboard') }}"</script>
 {% else %}<script>window.location.href="{{ url_for('customer.dashboard') }}"</script>{% endif %}

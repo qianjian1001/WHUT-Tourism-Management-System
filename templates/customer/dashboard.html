@@ -1,85 +1,74 @@
 {% extends "base.html" %}{% block title %}首页 — 途行旅行社{% endblock %}{% block content %}
-<div class="flex flex-col gap-28">
-  <!-- Stats row -->
-  <div class="grid grid-cols-3 gap-16">
-    <div class="card p-24 flex items-center gap-14">
-      <div class="w-11 h-11 flex items-center justify-center rounded-2xl" style="background:rgb(var(--primary-light))">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--primary))" stroke-width="1.6" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
-      </div>
-      <div>
-        <p class="text-2xl font-bold tracking-tight">{{ bookings|length }}</p>
-        <p class="text-xs mt-2" style="color:rgb(var(--fg-secondary))">我的预订</p>
-      </div>
-    </div>
-    <div class="card p-24 flex items-center gap-14">
-      <div class="w-11 h-11 flex items-center justify-center rounded-2xl" style="background:rgb(var(--success-light))">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--success))" stroke-width="1.6" stroke-linecap="round"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      </div>
-      <div>
-        <p class="text-2xl font-bold tracking-tight">{{ bookings|selectattr('status','in',['confirmed','completed'])|list|length }}</p>
-        <p class="text-xs mt-2" style="color:rgb(var(--fg-secondary))">已确认</p>
-      </div>
-    </div>
-    <div class="card p-24 flex items-center gap-14">
-      <div class="w-11 h-11 flex items-center justify-center rounded-2xl" style="background:rgb(var(--warning-light))">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--warning))" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <div>
-        <p class="text-2xl font-bold tracking-tight">{{ bookings|selectattr('status','equalto','pending')|list|length }}</p>
-        <p class="text-xs mt-2" style="color:rgb(var(--fg-secondary))">待处理</p>
-      </div>
-    </div>
-  </div>
+<div class="mb-20">
+  <h1 class="text-2xl font-bold tracking-tight mb-4">欢迎回来，{{ current_user.name }}</h1>
+  <p style="color:#86868b;font-size:15px">查看您的预订与旅行计划</p>
+</div>
 
-  <!-- Bookings table -->
-  <div class="card overflow-hidden">
-    <div class="px-28 py-20 flex items-center justify-between" style="border-bottom:0.5px solid rgba(var(--border),0.6)">
-      <h3 class="text-base font-semibold tracking-tight">最近预订</h3>
-      <a href="{{ url_for('customer.my_bookings') }}" class="text-sm font-medium no-underline" style="color:rgb(var(--primary))">查看全部 →</a>
-    </div>
-    {% if bookings %}
-    <table class="w-full">
-      <thead>
-        <tr style="border-bottom:0.5px solid rgba(var(--border),0.4)">
-          <th class="text-left px-28 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">预订编号</th>
-          <th class="text-left px-28 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">旅游团</th>
-          <th class="text-left px-28 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">出发日期</th>
-          <th class="text-left px-28 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">人数</th>
-          <th class="text-left px-28 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">总额</th>
-          <th class="text-left px-28 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">状态</th>
-          <th class="text-right px-28 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for b in bookings[:5] %}
-        <tr class="hover-muted transition-base" style="border-bottom:0.5px solid rgba(var(--border),0.3)">
-          <td class="px-28 py-14 text-sm font-medium" style="color:rgb(var(--primary))"><span style="font-variant-numeric:tabular-nums">{{ b.booking_no }}</span></td>
-          <td class="px-28 py-14 text-sm">{{ b.tour_group.code if b.tour_group }}</td>
-          <td class="px-28 py-14 text-sm">{{ b.tour_group.departure_date if b.tour_group }}</td>
-          <td class="px-28 py-14 text-sm">{{ b.adult_count + b.child_count }}人</td>
-          <td class="px-28 py-14 text-sm font-semibold">¥{{ "%.0f"|format(b.total_amount) }}</td>
-          <td class="px-28 py-14">
-            {% if b.status == 'pending' %}<span class="badge badge-warning">待处理</span>
-            {% elif b.status == 'confirmed' %}<span class="badge badge-brand">已确认</span>
-            {% elif b.status == 'completed' %}<span class="badge badge-success">已完成</span>
-            {% elif b.status == 'cancelled' %}<span class="badge badge-danger">已取消</span>
-            {% else %}<span class="badge badge-neutral">{{ b.status }}</span>{% endif %}
-          </td>
-          <td class="px-28 py-14 text-right">
-            <a href="{{ url_for('customer.booking_detail', id=b.id) }}" class="text-sm font-medium no-underline" style="color:rgb(var(--primary))">详情</a>
-          </td>
-        </tr>{% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-    <div class="flex flex-col items-center gap-16 py-56">
-      <div class="w-14 h-14 flex items-center justify-center rounded-2xl" style="background:rgb(var(--muted))">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--fg-tertiary))" stroke-width="1.4" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-      </div>
-      <p class="text-sm" style="color:rgb(var(--fg-secondary))">暂无预订记录</p>
-      <a href="{{ url_for('customer.tours') }}" class="btn-primary" style="text-decoration:none">浏览旅游团</a>
-    </div>
-    {% endif %}
+<!-- Stats row -->
+<div class="grid gap-12 mb-20" style="grid-template-columns:repeat(3,1fr)">
+  <div class="stat-card">
+    <span class="text-2xl font-bold" style="color:#007aff">{{ bookings|length }}</span>
+    <span class="text-xs" style="color:#86868b;display:block;margin-top:4px">我的预订</span>
   </div>
+  <div class="stat-card">
+    <span class="text-2xl font-bold" style="color:#34c759">{{ bookings|selectattr('status','in',['confirmed','completed'])|list|length }}</span>
+    <span class="text-xs" style="color:#86868b;display:block;margin-top:4px">已确认</span>
+  </div>
+  <div class="stat-card">
+    <span class="text-2xl font-bold" style="color:#ff9500">{{ bookings|selectattr('status','equalto','pending')|list|length }}</span>
+    <span class="text-xs" style="color:#86868b;display:block;margin-top:4px">待处理</span>
+  </div>
+</div>
+
+<!-- Bookings table -->
+<div class="card-frosted" style="overflow:hidden">
+  <div class="flex items-center justify-between" style="padding:14px 20px;border-bottom:1px solid rgba(0,0,0,0.04)">
+    <h3 class="text-sm font-semibold">最近预订</h3>
+    <a href="{{ url_for('customer.my_bookings') }}" class="text-sm no-underline" style="color:#007aff;font-weight:500">查看全部 →</a>
+  </div>
+  {% if bookings %}
+  <div style="overflow-x:auto">
+  <table class="apple-table">
+    <thead>
+      <tr>
+        <th style="padding:10px 20px">预订编号</th>
+        <th style="padding:10px 20px">旅游团</th>
+        <th style="padding:10px 20px">出发日期</th>
+        <th style="padding:10px 20px">人数</th>
+        <th style="padding:10px 20px">总额</th>
+        <th style="padding:10px 20px">状态</th>
+        <th style="padding:10px 20px;text-align:right">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bookings[:5] %}
+      <tr>
+        <td style="padding:12px 20px;font-size:13px;font-weight:500;color:#007aff">{{ b.booking_no }}</td>
+        <td style="padding:12px 20px;font-size:13px">{{ b.tour_group.code if b.tour_group }}</td>
+        <td style="padding:12px 20px;font-size:13px">{{ b.tour_group.departure_date if b.tour_group }}</td>
+        <td style="padding:12px 20px;font-size:13px">{{ b.adult_count + b.child_count }}人</td>
+        <td style="padding:12px 20px;font-size:13px;font-weight:600">¥{{ "%.0f"|format(b.total_amount) }}</td>
+        <td style="padding:12px 20px">
+          {% if b.status == 'pending' %}<span class="badge-apple badge-orange">待处理</span>
+          {% elif b.status == 'confirmed' %}<span class="badge-apple badge-blue">已确认</span>
+          {% elif b.status == 'completed' %}<span class="badge-apple badge-green">已完成</span>
+          {% elif b.status == 'cancelled' %}<span class="badge-apple badge-red">已取消</span>
+          {% elif b.status == 'pending_cancel' %}<span class="badge-apple badge-red">已取消</span>
+          {% else %}<span class="badge-apple badge-gray">{{ b.status }}</span>{% endif %}
+        </td>
+        <td style="padding:12px 20px;text-align:right">
+          <a href="{{ url_for('customer.booking_detail', id=b.id) }}" class="text-sm" style="color:#007aff;text-decoration:none;font-weight:500">详情</a>
+        </td>
+      </tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-calendar-xmark" style="font-size:28px;color:#86868b;opacity:0.3"></i>
+    <p class="text-sm" style="color:#86868b">暂无预订记录</p>
+    <a href="{{ url_for('customer.tours') }}" class="btn-primary" style="text-decoration:none">浏览旅游团</a>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

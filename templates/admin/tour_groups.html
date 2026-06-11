@@ -1,102 +1,190 @@
-{% extends "base.html" %}{% block title %}旅游团管理 — 途行旅行社{% endblock %}{% block content %}
-<div class="flex items-center justify-between mb-28">
-  <h1 class="text-3xl font-bold tracking-tight">旅游团管理</h1>
-  <button onclick="document.getElementById('addGroupModal').classList.remove('hidden')" class="btn-primary">+ 新增旅游团</button>
+{% extends "base.html" %}{% block title %}旅游团管理 — 途行旅行社{% endblock %}
+{% block breadcrumb %}
+<div class="breadcrumb"><a href="{{ url_for('admin.dashboard') }}">仪表盘</a><span>/</span><span>旅游团</span></div>
+{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between section-gap">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight mb-2" style="letter-spacing:-0.01em">旅游团管理</h1>
+    <p style="color:#86868b;font-size:15px">管理所有旅行团次与价格</p>
+  </div>
+  <button onclick="document.getElementById('addGroupModal').classList.remove('hidden')" class="btn-primary">
+    <i class="fa-solid fa-plus text-xs"></i> 新增旅游团
+  </button>
 </div>
 
-<div class="card overflow-hidden">
-  <table class="w-full">
+<div class="card-gap">
+  <div class="search-apple">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="搜索团号、路线、日期..." oninput="filterTable('groupTable', this.value)">
+  </div>
+</div>
+
+<div class="card-frosted" style="padding:20px 24px">
+  <div class="mobile-scroll">
+  <table class="apple-table" id="groupTable">
     <thead>
-      <tr style="border-bottom:0.5px solid rgba(var(--border),0.6);background:rgb(var(--muted))">
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">团号</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">路线</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">出发</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">截止</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">人数</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">成人价</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">儿童价</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">状态</th>
-        <th class="text-right px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">操作</th>
+      <tr>
+        <th class="text-left px-10 py-10">团号</th>
+        <th class="text-left px-10 py-10">路线</th>
+        <th class="text-left px-10 py-10">出发</th>
+        <th class="text-left px-10 py-10">截止</th>
+        <th class="text-left px-10 py-10">人数</th>
+        <th class="text-left px-10 py-10">成人价</th>
+        <th class="text-left px-10 py-10">儿童价</th>
+        <th class="text-left px-10 py-10">状态</th>
+        <th class="text-right px-10 py-10">操作</th>
       </tr>
     </thead>
     <tbody>
       {% for g in groups %}
-      <tr class="hover-muted transition-base" style="border-bottom:0.5px solid rgba(var(--border),0.3)">
-        <td class="px-16 py-14 text-sm font-medium" style="color:rgb(var(--primary))"><span style="font-variant-numeric:tabular-nums">{{ g.code }}</span></td>
-        <td class="px-16 py-14 text-sm">{{ g.route.name if g.route else '-' }}</td>
-        <td class="px-16 py-14 text-sm">{{ g.departure_date }}</td>
-        <td class="px-16 py-14 text-sm" style="color:rgb(var(--warning))">{{ g.deadline_date }}</td>
-        <td class="px-16 py-14 text-sm {% if g.current_participants >= g.max_participants %}"style="color:rgb(var(--danger));font-weight:600"{% endif %}">{{ g.current_participants }}/{{ g.max_participants }}</td>
-        <td class="px-16 py-14 text-sm">{% if g.adult_price %}¥{{ "%.0f"|format(g.adult_price) }}{% else %}-{% endif %}</td>
-        <td class="px-16 py-14 text-sm">{% if g.child_price %}¥{{ "%.0f"|format(g.child_price) }}{% else %}-{% endif %}</td>
-        <td class="px-16 py-14">
-          {% if g.status == 'draft' %}<span class="badge badge-neutral">草稿</span>
-          {% elif g.status == 'published' %}<span class="badge badge-success">已发布</span>
-          {% elif g.status == 'cancelled' %}<span class="badge badge-danger">已取消</span>{% endif %}
+      <tr data-search="{{ g.code }} {{ g.route.name if g.route }} {{ g.departure_date }}">
+        <td class="px-10 py-11"><span class="font-medium" style="color:#007aff;font-size:14px">{{ g.code }}</span></td>
+        <td class="px-10 py-11" style="font-size:14px">{{ g.route.name if g.route else '-' }}</td>
+        <td class="px-10 py-11" style="font-size:14px">{{ g.departure_date }}</td>
+        <td class="px-10 py-11" style="font-size:14px;color:#ff9500">{{ g.deadline_date }}</td>
+        <td class="px-10 py-11" style="font-size:14px{% if g.current_participants >= g.max_participants %};color:#ff3b30;font-weight:600{% endif %}">{{ g.current_participants }}/{{ g.max_participants }}</td>
+        <td class="px-10 py-11" style="font-size:14px">{% if g.adult_price %}¥{{ "%.0f"|format(g.adult_price) }}{% else %}-{% endif %}</td>
+        <td class="px-10 py-11" style="font-size:14px">{% if g.child_price %}¥{{ "%.0f"|format(g.child_price) }}{% else %}-{% endif %}</td>
+        <td class="px-10 py-11">
+          {% if g.status == 'draft' %}<span class="badge-apple badge-gray">草稿</span>
+          {% elif g.status == 'published' %}<span class="badge-apple badge-green">已发布</span>
+          {% elif g.status == 'cancelled' %}<span class="badge-apple badge-red">已取消</span>{% endif %}
         </td>
-        <td class="px-16 py-14 text-right">
-          <div class="flex items-center justify-end gap-4">
-            <button onclick="openPrice('{{ g.id }}','{{ g.adult_price }}','{{ g.child_price }}','{{ g.discount_info or '' }}')" class="btn-ghost w-9 h-9 p-0" title="价格">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-            </button>
+        <td class="px-10 py-11 text-right">
+          <div class="flex items-center justify-end gap-2">
+            <button onclick="openPrice('{{ g.id }}','{{ g.adult_price }}','{{ g.child_price }}','{{ g.discount_info or '' }}')" class="btn-icon btn-text" title="价格"><i class="fa-solid fa-tag text-sm"></i></button>
             {% if not g.price_published %}
-            <a href="{{ url_for('admin.publish_price', id=g.id) }}" class="btn-ghost w-9 h-9 p-0" title="发布">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </a>
+            <a href="{{ url_for('admin.publish_price', id=g.id) }}" class="btn-icon btn-text" title="发布"><i class="fa-solid fa-check text-sm"></i></a>
             {% endif %}
-            <a href="{{ url_for('admin.toggle_group_status', id=g.id) }}" class="btn-ghost w-9 h-9 p-0" title="切换">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            </a>
+            <a href="{{ url_for('admin.toggle_group_status', id=g.id) }}" class="btn-icon btn-text" title="切换"><i class="fa-solid fa-rotate text-sm"></i></a>
           </div>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 
 <!-- Add Group Modal -->
-<div id="addGroupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-24" style="background:rgba(0,0,0,0.2);backdrop-filter:blur(8px)" onclick="if(event.target===this)this.classList.add('hidden')">
-  <div class="animate-scale-in w-full flex flex-col gap-20" style="max-width:460px;background:rgb(var(--card));border-radius:22px;padding:28px;box-shadow:0 20px 60px -12px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04)" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold tracking-tight">新增旅游团</h3>
-      <button onclick="document.getElementById('addGroupModal').classList.add('hidden')" class="btn-ghost w-9 h-9 p-0">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
+<div id="addGroupModal" class="hidden modal-backdrop" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="width:540px">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-24">
+      <div class="flex items-center gap-12">
+        <div class="w-10 h-10 flex items-center justify-center rounded-xl" style="background:rgba(52,199,89,0.08)">
+          <i class="fa-solid fa-users text-base" style="color:#34c759"></i>
+        </div>
+        <h3 class="text-lg font-semibold">新增旅游团</h3>
+      </div>
+      <button onclick="document.getElementById('addGroupModal').classList.add('hidden')" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <form method="POST" action="{{ url_for('admin.add_tour_group') }}" class="flex flex-col gap-14">
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">团号</label><input type="text" name="code" class="input" required></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">路线</label><select name="route_id" class="input" required><option value="">请选择</option>{% for r in routes %}<option value="{{ r.id }}">{{ r.code }} - {{ r.name }}</option>{% endfor %}</select></div>
-      <div class="grid grid-cols-2 gap-12">
-        <div class="flex flex-col gap-6"><label class="text-sm font-medium">出发</label><input type="date" name="departure_date" class="input" required></div>
-        <div class="flex flex-col gap-6"><label class="text-sm font-medium">返回</label><input type="date" name="return_date" class="input"></div>
+
+    <form method="POST" action="{{ url_for('admin.add_tour_group') }}" style="display:flex;flex-direction:column;gap:20px">
+      <!-- Section: 基本信息 -->
+      <div>
+        <p class="text-xs font-semibold mb-10" style="color:rgb(var(--fg-secondary));text-transform:uppercase;letter-spacing:0.5px">基本信息</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">团号 <span style="color:#ff3b30">*</span></label>
+            <input type="text" name="code" class="input-apple" placeholder="如: TG20240701" required>
+          </div>
+          <div>
+            <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">所属路线 <span style="color:#ff3b30">*</span></label>
+            <select name="route_id" class="input-apple" required>
+              <option value="">请选择路线...</option>
+              {% for r in routes %}<option value="{{ r.id }}">{{ r.code }} — {{ r.name }} ({{ r.destination or '' }})</option>{% endfor %}
+            </select>
+          </div>
+        </div>
       </div>
-      <div class="grid grid-cols-2 gap-12">
-        <div class="flex flex-col gap-6"><label class="text-sm font-medium">截止</label><input type="date" name="deadline_date" class="input" required></div>
-        <div class="flex flex-col gap-6"><label class="text-sm font-medium">限额</label><input type="number" name="max_participants" value="30" min="1" class="input"></div>
+
+      <!-- Section: 日期 -->
+      <div>
+        <p class="text-xs font-semibold mb-10" style="color:rgb(var(--fg-secondary));text-transform:uppercase;letter-spacing:0.5px">日期安排</p>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+          <div>
+            <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">出发日期 <span style="color:#ff3b30">*</span></label>
+            <input type="date" name="departure_date" class="input-apple" required>
+          </div>
+          <div>
+            <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">返回日期</label>
+            <input type="date" name="return_date" class="input-apple">
+          </div>
+        </div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+          <div>
+            <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">报名截止 <span style="color:#ff3b30">*</span></label>
+            <input type="date" name="deadline_date" class="input-apple" required>
+          </div>
+          <div>
+            <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">人数限额</label>
+            <input type="number" name="max_participants" value="30" min="1" class="input-apple">
+          </div>
+        </div>
       </div>
-      <div class="flex gap-12 pt-8">
-        <button type="button" onclick="document.getElementById('addGroupModal').classList.add('hidden')" class="btn-secondary flex-1">取消</button>
-        <button type="submit" class="btn-primary flex-1">保存</button>
+
+      <!-- Actions -->
+      <div style="border-top:1px solid rgba(var(--border),0.5);padding-top:16px">
+        <div class="flex gap-12">
+          <button type="button" onclick="document.getElementById('addGroupModal').classList.add('hidden')" class="btn-ghost flex-1">取消</button>
+          <button type="submit" class="btn-primary flex-1">保存旅游团</button>
+        </div>
       </div>
     </form>
   </div>
 </div>
 
 <!-- Price Modal -->
-<div id="priceModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-24" style="background:rgba(0,0,0,0.2);backdrop-filter:blur(8px)" onclick="if(event.target===this)this.classList.add('hidden')">
-  <div class="animate-scale-in w-full flex flex-col gap-20" style="max-width:460px;background:rgb(var(--card));border-radius:22px;padding:28px;box-shadow:0 20px 60px -12px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04)" onclick="event.stopPropagation()">
-    <h3 class="text-lg font-semibold tracking-tight">价格设定: <span id="priceGroupCode" style="color:rgb(var(--primary))"></span></h3>
-    <form id="priceForm" method="POST" class="flex flex-col gap-14">
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">成人价格 (元/人)</label><input type="number" name="adult_price" id="priceAdult" step="0.01" class="input" required></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">儿童价格 (元/人)</label><input type="number" name="child_price" id="priceChild" step="0.01" class="input"></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">优惠信息</label><textarea name="discount_info" id="priceDiscount" rows="2" class="input"></textarea></div>
-      <div class="flex gap-12 pt-8">
-        <button type="button" onclick="document.getElementById('priceModal').classList.add('hidden')" class="btn-secondary flex-1">取消</button>
-        <button type="submit" class="btn-primary flex-1">保存价格</button>
+<div id="priceModal" class="hidden modal-backdrop" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="width:480px">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-24">
+      <div class="flex items-center gap-12">
+        <div class="w-10 h-10 flex items-center justify-center rounded-xl" style="background:rgba(255,149,0,0.08)">
+          <i class="fa-solid fa-tag text-base" style="color:#ff9500"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold">价格设定</h3>
+          <p class="text-xs" style="color:rgb(var(--fg-secondary));margin-top:2px">团号: <span id="priceGroupCode" style="color:#007aff;font-weight:600"></span></p>
+        </div>
+      </div>
+      <button onclick="document.getElementById('priceModal').classList.add('hidden')" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <form id="priceForm" method="POST" style="display:flex;flex-direction:column;gap:16px">
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">成人价格 <span style="color:#ff3b30">*</span></label>
+          <div style="position:relative">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:rgb(var(--fg-secondary))">¥</span>
+            <input type="number" name="adult_price" id="priceAdult" step="0.01" class="input-apple" style="padding-left:28px" placeholder="0" required>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">儿童价格</label>
+          <div style="position:relative">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:rgb(var(--fg-secondary))">¥</span>
+            <input type="number" name="child_price" id="priceChild" step="0.01" class="input-apple" style="padding-left:28px" placeholder="0">
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold mb-3 block" style="color:rgb(var(--fg-secondary))">优惠信息</label>
+        <textarea name="discount_info" id="priceDiscount" rows="2" class="input-apple" placeholder="如: 早鸟优惠：提前15天报名减200元/人"></textarea>
+      </div>
+
+      <div style="border-top:1px solid rgba(var(--border),0.5);padding-top:16px;margin-top:4px">
+        <div class="flex gap-12">
+          <button type="button" onclick="document.getElementById('priceModal').classList.add('hidden')" class="btn-ghost flex-1">取消</button>
+          <button type="submit" class="btn-primary flex-1">保存价格</button>
+        </div>
       </div>
     </form>
   </div>
 </div>
+
 <script>function openPrice(id,adult,child,discount){document.getElementById('priceForm').action='/admin/tour-groups/'+id+'/pricing';document.getElementById('priceGroupCode').textContent=id;document.getElementById('priceAdult').value=adult;document.getElementById('priceChild').value=child;document.getElementById('priceDiscount').value=discount;document.getElementById('priceModal').classList.remove('hidden')}</script>
 {% endblock %}

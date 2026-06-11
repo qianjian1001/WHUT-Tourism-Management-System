@@ -1,48 +1,62 @@
-{% extends "base.html" %}{% block title %}预订管理 — 途行旅行社{% endblock %}{% block content %}
-<div class="mb-28">
-  <h1 class="text-3xl font-bold tracking-tight">预订管理</h1>
+{% extends "base.html" %}{% block title %}预订管理 — 途行旅行社{% endblock %}
+{% block breadcrumb %}
+<div class="breadcrumb"><a href="{{ url_for('admin.dashboard') }}">仪表盘</a><span>/</span><span>预订管理</span></div>
+{% endblock %}
+{% block content %}
+
+<div class="section-gap">
+  <h1 class="text-2xl font-semibold tracking-tight mb-2" style="letter-spacing:-0.01em">预订管理</h1>
+  <p style="color:#86868b;font-size:15px">管理所有客户预订与付款</p>
 </div>
 
-<div class="card overflow-hidden">
-  <table class="w-full">
+<div class="card-gap">
+  <div class="search-apple">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="搜索预订编号、申请人、电话..." oninput="filterTable('bookingTable', this.value)">
+  </div>
+</div>
+
+<div class="card-frosted" style="padding:20px 24px">
+  <div class="mobile-scroll">
+  <table class="apple-table" id="bookingTable">
     <thead>
-      <tr style="border-bottom:0.5px solid rgba(var(--border),0.6);background:rgb(var(--muted))">
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">编号</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">旅游团</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">申请人</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">电话</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">大/小</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">订金</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">总额</th>
-        <th class="text-left px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">状态</th>
-        <th class="text-right px-16 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">操作</th>
+      <tr>
+        <th class="text-left px-10 py-10">编号</th>
+        <th class="text-left px-10 py-10">旅游团</th>
+        <th class="text-left px-10 py-10">申请人</th>
+        <th class="text-left px-10 py-10">电话</th>
+        <th class="text-left px-10 py-10">大/小</th>
+        <th class="text-left px-10 py-10">订金</th>
+        <th class="text-left px-10 py-10">总额</th>
+        <th class="text-left px-10 py-10">状态</th>
+        <th class="text-right px-10 py-10">操作</th>
       </tr>
     </thead>
     <tbody>
       {% for b in bookings %}
-      <tr class="hover-muted transition-base" style="border-bottom:0.5px solid rgba(var(--border),0.3)">
-        <td class="px-16 py-14">
-          <a href="{{ url_for('admin.booking_detail', id=b.id) }}" class="text-sm font-medium no-underline" style="color:rgb(var(--primary))"><span style="font-variant-numeric:tabular-nums">{{ b.booking_no }}</span></a>
+      <tr data-search="{{ b.booking_no }} {{ b.applicant_name }} {{ b.applicant_phone }} {{ b.tour_group.code if b.tour_group }}">
+        <td class="px-10 py-11"><a href="{{ url_for('admin.booking_detail', id=b.id) }}" class="no-underline font-medium" style="color:#007aff;font-size:14px">{{ b.booking_no }}</a></td>
+        <td class="px-10 py-11" style="font-size:14px">{{ b.tour_group.code if b.tour_group }}</td>
+        <td class="px-10 py-11" style="font-size:14px;font-weight:500">{{ b.applicant_name }}</td>
+        <td class="px-10 py-11" style="color:#86868b;font-size:14px">{{ b.applicant_phone }}</td>
+        <td class="px-10 py-11" style="font-size:14px">{{ b.adult_count }}/{{ b.child_count }}</td>
+        <td class="px-10 py-11" style="font-size:14px">¥{{ "%.0f"|format(b.deposit_amount) }}</td>
+        <td class="px-10 py-11" style="font-size:14px;font-weight:600">¥{{ "%.0f"|format(b.total_amount) }}</td>
+        <td class="px-10 py-11">
+          {% if b.status == 'pending' %}<span class="badge-apple badge-orange">待确认</span>
+          {% elif b.status == 'confirmed' %}<span class="badge-apple badge-blue">已确认</span>
+          {% elif b.status == 'completed' %}<span class="badge-apple badge-green">已完成</span>
+          {% elif b.status == 'cancelled' %}<span class="badge-apple badge-red">已取消</span>
+          {% elif b.status == 'pending_cancel' %}<span class="badge-apple badge-red">已取消</span>
+          {% else %}<span class="badge-apple badge-gray">{{ b.status }}</span>{% endif %}
         </td>
-        <td class="px-16 py-14 text-sm">{{ b.tour_group.code if b.tour_group }}</td>
-        <td class="px-16 py-14 text-sm font-medium">{{ b.applicant_name }}</td>
-        <td class="px-16 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{{ b.applicant_phone }}</td>
-        <td class="px-16 py-14 text-sm">{{ b.adult_count }}/{{ b.child_count }}</td>
-        <td class="px-16 py-14 text-sm">¥{{ "%.0f"|format(b.deposit_amount) }}</td>
-        <td class="px-16 py-14 text-sm font-semibold">¥{{ "%.0f"|format(b.total_amount) }}</td>
-        <td class="px-16 py-14">
-          {% if b.status == 'pending' %}<span class="badge badge-warning">待确认</span>
-          {% elif b.status == 'confirmed' %}<span class="badge badge-brand">已确认</span>
-          {% elif b.status == 'completed' %}<span class="badge badge-success">已完成</span>
-          {% elif b.status == 'cancelled' %}<span class="badge badge-danger">已取消</span>
-          {% else %}<span class="badge badge-neutral">{{ b.status }}</span>{% endif %}
-        </td>
-        <td class="px-16 py-14 text-right">
-          <a href="{{ url_for('admin.booking_detail', id=b.id) }}" class="text-sm font-medium no-underline" style="color:rgb(var(--primary))">详情</a>
+        <td class="px-10 py-11 text-right">
+          <a href="{{ url_for('admin.booking_detail', id=b.id) }}" class="btn-text text-sm" style="text-decoration:none">详情</a>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 {% endblock %}

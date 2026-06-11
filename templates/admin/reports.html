@@ -1,50 +1,56 @@
-{% extends "base.html" %}{% block title %}财务报表 — 途行旅行社{% endblock %}{% block content %}
-<div class="mb-28">
-  <h1 class="text-3xl font-bold tracking-tight">财务报表导出</h1>
+{% extends "base.html" %}{% block title %}财务报表 — 途行旅行社{% endblock %}
+{% block breadcrumb %}
+<div class="breadcrumb"><a href="{{ url_for('admin.dashboard') }}">仪表盘</a><span>/</span><span>财务导出</span></div>
+{% endblock %}
+{% block content %}
+
+<div class="section-gap">
+  <h1 class="text-2xl font-semibold tracking-tight mb-2" style="letter-spacing:-0.01em">财务报表导出</h1>
+  <p style="color:#86868b;font-size:15px">导出支付数据到财务系统</p>
 </div>
 
-<div class="card p-28 flex items-center justify-between mb-20">
+<div class="card-frosted flex items-center justify-between" style="padding:20px 24px;margin-bottom:16px">
   <div>
     <h3 class="text-base font-semibold mb-4">当日财务数据导出</h3>
-    <p class="text-sm" style="color:rgb(var(--fg-secondary))">导出当天的订金和余款支付记录到财务系统</p>
+    <p style="color:#86868b;font-size:14px">导出当天的订金和余款支付记录</p>
   </div>
   <a href="{{ url_for('admin.export_financial') }}" class="btn-primary" style="text-decoration:none">导出数据</a>
 </div>
 
 {% if exported %}
-<div class="card overflow-hidden">
-  <div class="px-28 py-20" style="border-bottom:0.5px solid rgba(var(--border),0.6)">
-    <h3 class="text-base font-semibold">导出结果</h3>
-  </div>
+<div class="card-frosted" style="padding:20px 24px">
+  <h3 class="text-base font-semibold mb-16" style="padding-bottom:14px;border-bottom:1px solid rgba(0,0,0,0.05)">导出结果</h3>
   {% if export_data %}
-  <table class="w-full">
+  <div class="mobile-scroll">
+  <table class="apple-table">
     <thead>
-      <tr style="border-bottom:0.5px solid rgba(var(--border),0.6);background:rgb(var(--muted))">
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">支付ID</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">预订ID</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">类型</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">金额</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">时间</th>
+      <tr>
+        <th class="text-left px-10 py-10">支付ID</th>
+        <th class="text-left px-10 py-10">预订ID</th>
+        <th class="text-left px-10 py-10">类型</th>
+        <th class="text-left px-10 py-10">金额</th>
+        <th class="text-left px-10 py-10">时间</th>
       </tr>
     </thead>
     <tbody>
       {% for p in export_data %}
-      <tr style="border-bottom:0.5px solid rgba(var(--border),0.3)">
-        <td class="px-24 py-14 text-sm">{{ p.payment_id }}</td>
-        <td class="px-24 py-14 text-sm">{{ p.booking_id }}</td>
-        <td class="px-24 py-14">
-          {% if p.type == 'deposit' %}<span class="badge badge-brand">订金</span>{% else %}<span class="badge badge-success">余款</span>{% endif %}
+      <tr>
+        <td class="px-10 py-11" style="font-size:14px">{{ p.payment_id }}</td>
+        <td class="px-10 py-11" style="font-size:14px">{{ p.booking_id }}</td>
+        <td class="px-10 py-11">
+          {% if p.type == 'deposit' %}<span class="badge-apple badge-blue">订金</span>{% else %}<span class="badge-apple badge-green">余款</span>{% endif %}
         </td>
-        <td class="px-24 py-14 text-sm font-semibold">¥{{ "%.2f"|format(p.amount) }}</td>
-        <td class="px-24 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{{ p.paid_at }}</td>
+        <td class="px-10 py-11" style="font-size:14px;font-weight:600">¥{{ "%.2f"|format(p.amount) }}</td>
+        <td class="px-10 py-11" style="color:#86868b;font-size:14px">{{ p.paid_at }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
   {% endif %}
-  <div class="p-24 flex items-start gap-10" style="background:rgb(var(--success-light));margin:16px;border-radius:16px">
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="rgb(var(--success))" stroke="none" class="flex-shrink-0 mt-1"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-    <div class="text-sm" style="color:rgb(var(--success))">
+  <div class="flex items-start gap-10" style="background:rgba(52,199,89,0.06);padding:14px 16px;border-radius:8px;margin-top:16px">
+    <i class="fa-solid fa-circle-check text-sm flex-shrink-0 mt-2" style="color:#34c759"></i>
+    <div style="font-size:13px;color:#34c759;line-height:1.6">
       <p class="font-semibold">导出完成</p>
       <p>订金总计: <strong>¥{{ "%.2f"|format(total_deposit) }}</strong> | 余款总计: <strong>¥{{ "%.2f"|format(total_balance) }}</strong></p>
     </div>

@@ -354,6 +354,7 @@
         box-shadow: 0 0 0 4px rgba(var(--primary), 0.08);
       }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block head %}{% endblock %}
 </head>
@@ -422,21 +423,35 @@
 <!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
-<div class="fixed top-20 right-20 z-50 flex flex-col gap-8 max-w-sm">
+<div class="fixed top-20 z-50 flex flex-col gap-8 max-w-sm" style="left:50%;transform:translateX(-50%)">
   {% for category, message in messages %}
   {% set cls = 'badge-success' if category == 'success' else 'badge-danger' if category == 'danger' else 'badge-warning' if category == 'warning' else 'badge-brand' %}
-  <div class="animate-slide-in flex items-center gap-10 px-18 py-14" style="background:rgba(var(--card),0.95);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:0.5px solid rgba(var(--border),0.8);border-radius:16px;box-shadow:0 12px 32px -8px rgba(0,0,0,0.1)">
+  <div class="animate-slide-in flex items-center gap-12 px-24 py-16" style="background:rgba(var(--card),0.95);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:0.5px solid rgba(var(--border),0.8);border-radius:18px;box-shadow:0 12px 32px -8px rgba(0,0,0,0.1)">
     {% if category == 'success' %}
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="rgb(var(--success))" stroke="none"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="rgb(var(--success))" stroke="none"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
     {% else %}
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--fg-secondary))" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--fg-secondary))" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
     {% endif %}
-    <span class="text-sm font-medium">{{ message }}</span>
+    <span class="text-base font-medium">{{ message }}</span>
   </div>
   {% endfor %}
 </div>
 {% endif %}
 {% endwith %}
+
+<script>
+(function(){
+  var toasts = document.querySelectorAll('.fixed.top-20.z-50 .animate-slide-in');
+  toasts.forEach(function(t){
+    setTimeout(function(){
+      t.style.opacity = '0';
+      t.style.transform = 'translateY(-8px)';
+      t.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 3000);
+  });
+})();
+</script>
 
 <main class="mx-auto pt-28 pb-64" style="max-width:1160px;padding-left:24px;padding-right:24px">
 {% block content %}{% endblock %}

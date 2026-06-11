@@ -1,43 +1,42 @@
-{% extends "base.html" %}{% block title %}变更历史 — 途行旅行社{% endblock %}{% block content %}
-<nav class="flex items-center gap-8 text-sm mb-28" style="color:rgb(var(--fg-secondary))">
-  <a href="{{ url_for('admin.routes') }}" class="no-underline" style="color:inherit">路线管理</a>
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
-  <span class="font-medium" style="color:rgb(var(--fg))">{{ route.code }}</span>
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
-  <span class="font-medium" style="color:rgb(var(--fg))">变更历史</span>
-</nav>
+{% extends "base.html" %}{% block title %}变更历史 — 途行旅行社{% endblock %}
+{% block breadcrumb %}
+<div class="breadcrumb"><a href="{{ url_for('admin.dashboard') }}">仪表盘</a><span>/</span><a href="{{ url_for('admin.routes') }}">旅游路线</a><span>/</span><span>{{ route.code }}</span><span>/</span><span>变更历史</span></div>
+{% endblock %}
+{% block content %}
 
-<div class="mb-28">
-  <h1 class="text-3xl font-bold tracking-tight mb-8">路线变更历史</h1>
-  <p class="text-base" style="color:rgb(var(--fg-secondary))">{{ route.code }} - {{ route.name }}</p>
+<div class="section-gap">
+  <h1 class="text-2xl font-semibold tracking-tight mb-2" style="letter-spacing:-0.01em">路线变更历史</h1>
+  <p style="color:#86868b;font-size:15px">{{ route.code }} - {{ route.name }}</p>
 </div>
 
-<div class="card overflow-hidden">
-  <table class="w-full">
+<div class="card-frosted" style="padding:20px 24px">
+  <div class="mobile-scroll">
+  <table class="apple-table">
     <thead>
-      <tr style="border-bottom:0.5px solid rgba(var(--border),0.6);background:rgb(var(--muted))">
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">时间</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">字段</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">旧值</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">新值</th>
-        <th class="text-left px-24 py-14 text-xs font-medium" style="color:rgb(var(--fg-secondary))">操作人</th>
+      <tr>
+        <th class="text-left px-10 py-10">时间</th>
+        <th class="text-left px-10 py-10">字段</th>
+        <th class="text-left px-10 py-10">旧值</th>
+        <th class="text-left px-10 py-10">新值</th>
+        <th class="text-left px-10 py-10">操作人</th>
       </tr>
     </thead>
     <tbody>
       {% for h in history %}
-      <tr class="hover-muted transition-base" style="border-bottom:0.5px solid rgba(var(--border),0.3)">
-        <td class="px-24 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{{ h.changed_at.strftime('%Y-%m-%d %H:%M') }}</td>
-        <td class="px-24 py-14 text-sm font-medium">{{ h.field_name }}</td>
-        <td class="px-24 py-14 text-sm" style="color:rgb(var(--danger))"><s>{{ h.old_value }}</s></td>
-        <td class="px-24 py-14 text-sm font-medium" style="color:rgb(var(--success))">{{ h.new_value }}</td>
-        <td class="px-24 py-14 text-sm" style="color:rgb(var(--fg-secondary))">{% set u = User.query.get(h.changed_by) %}{{ u.name if u else '-' }}</td>
+      <tr>
+        <td class="px-10 py-11" style="color:#86868b;font-size:14px">{{ h.changed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td class="px-10 py-11" style="font-size:14px;font-weight:500">{{ h.field_name }}</td>
+        <td class="px-10 py-11" style="font-size:14px;color:#ff3b30"><s>{{ h.old_value }}</s></td>
+        <td class="px-10 py-11" style="font-size:14px;font-weight:500;color:#34c759">{{ h.new_value }}</td>
+        <td class="px-10 py-11" style="font-size:14px;color:#86868b">{% set u = User.query.get(h.changed_by) %}{{ u.name if u else '-' }}</td>
       </tr>
       {% else %}
       <tr>
-        <td colspan="5" class="px-24 py-36 text-center text-sm" style="color:rgb(var(--fg-secondary))">暂无变更记录</td>
+        <td colspan="5" class="px-10 py-16 text-center" style="color:#86868b;font-size:14px">暂无变更记录</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 {% endblock %}

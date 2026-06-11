@@ -1,40 +1,26 @@
 {% extends "base.html" %}{% block title %}个人设置 — 途行旅行社{% endblock %}{% block content %}
-<div class="mb-28">
-  <h1 class="text-3xl font-bold tracking-tight">个人设置</h1>
+<div class="section-gap text-center">
+  <h1 class="text-2xl font-bold tracking-tight">个人设置</h1>
 </div>
 
-<div class="card p-28 flex flex-col gap-28" style="max-width:500px">
-  <form method="POST" class="flex flex-col gap-18">
-    <div class="flex flex-col gap-6">
-      <label class="text-sm font-medium">用户名</label>
-      <input type="text" value="{{ current_user.username }}" disabled class="input" style="opacity:0.4">
-    </div>
-    <div class="flex flex-col gap-6">
-      <label class="text-sm font-medium">姓名</label>
-      <input type="text" name="name" value="{{ current_user.name }}" class="input" required>
-    </div>
-    <div class="flex flex-col gap-6">
-      <label class="text-sm font-medium">电话</label>
-      <input type="text" name="phone" value="{{ current_user.phone or '' }}" class="input">
-    </div>
-    <div class="flex flex-col gap-6">
-      <label class="text-sm font-medium">邮箱</label>
-      <input type="email" name="email" value="{{ current_user.email or '' }}" class="input">
+<div class="card-frosted mx-auto" style="max-width:520px;padding:24px 28px">
+  <form method="POST" style="display:flex;flex-direction:column;gap:16px">
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px">
+      <div><label class="text-sm font-medium mb-2 block">用户名</label><input type="text" value="{{ current_user.username }}" disabled class="input-apple" style="opacity:0.35"></div>
+      <div><label class="text-sm font-medium mb-2 block">姓名</label><input type="text" name="name" value="{{ current_user.name }}" class="input-apple" required></div>
+      <div><label class="text-sm font-medium mb-2 block">电话</label><input type="text" name="phone" value="{{ current_user.phone or '' }}" class="input-apple"></div>
+      <div><label class="text-sm font-medium mb-2 block">邮箱</label><input type="email" name="email" value="{{ current_user.email or '' }}" class="input-apple"></div>
     </div>
 
-    <div class="my-4" style="border-top:0.5px solid rgba(var(--border),0.6)"></div>
+    <div style="border-top:1px solid rgba(0,0,0,0.06)"></div>
 
-    <h3 class="text-base font-semibold">修改密码</h3>
-    <div class="flex flex-col gap-6">
-      <label class="text-sm font-medium">当前密码</label>
-      <input type="password" name="current_password" class="input">
-    </div>
-    <div class="flex flex-col gap-6">
-      <label class="text-sm font-medium">新密码 <span class="font-normal" style="color:rgb(var(--fg-tertiary))">(留空不修改)</span></label>
-      <input type="password" name="new_password" class="input" placeholder="新密码">
+    <h3 class="text-sm font-semibold">修改密码</h3>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px">
+      <div><label class="text-sm font-medium mb-2 block">当前密码</label><input type="password" name="current_password" class="input-apple"></div>
+      <div><label class="text-sm font-medium mb-2 block">新密码 <span style="color:#86868b;font-weight:400">(留空不修改)</span></label><input type="password" name="new_password" class="input-apple" placeholder="新密码"></div>
     </div>
 
-    <button type="submit" class="btn-primary mt-4" style="align-self:flex-start">保存更改</button>
+    <button type="submit" class="btn-primary" style="align-self:flex-start">保存更改</button>
   </form>
 </div>
 {% endblock %}

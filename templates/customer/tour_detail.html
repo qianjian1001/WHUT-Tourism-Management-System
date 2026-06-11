@@ -1,79 +1,67 @@
 {% extends "base.html" %}{% block title %}{{ group.route.name if group.route else group.code }}{% endblock %}{% block content %}
-<nav class="flex items-center gap-8 text-sm mb-28" style="color:rgb(var(--fg-secondary))">
-  <a href="{{ url_for('customer.tours') }}" class="no-underline" style="color:inherit">旅游团列表</a>
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
-  <span class="font-medium" style="color:rgb(var(--fg))">{{ group.code }}</span>
-</nav>
+<div class="mb-14">
+  <a href="{{ url_for('customer.tours') }}" class="text-sm no-underline" style="color:#86868b">← 返回旅游团列表</a>
+</div>
 
-<div class="grid gap-20" style="grid-template-columns:1fr 380px">
-  <!-- Main content -->
-  <div class="card p-28 flex flex-col gap-24">
-    <div>
-      <span class="badge badge-brand mb-14">{{ group.route.destination if group.route else '' }}</span>
-      <h1 class="text-3xl font-bold tracking-tight mt-14 mb-8">{{ group.route.name if group.route else group.code }}</h1>
-      <p class="text-sm" style="color:rgb(var(--fg-secondary))">团号: {{ group.code }}</p>
+<div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
+
+  <!-- Left: main -->
+  <div class="card-frosted" style="padding:24px">
+    <span class="badge-apple badge-blue mb-10">{{ group.route.destination if group.route else '' }}</span>
+    <h1 class="text-xl font-bold tracking-tight mt-8 mb-4">{{ group.route.name if group.route else group.code }}</h1>
+    <p class="text-sm mb-12" style="color:#86868b">团号: {{ group.code }}</p>
+
+    <!-- Trip info: 4 columns -->
+    <div class="grid mb-16" style="grid-template-columns:repeat(4,1fr);gap:10px;background:rgba(0,0,0,0.02);padding:14px;border-radius:8px">
+      <div class="text-center">
+        <p class="text-xs mb-2" style="color:#86868b">出发</p>
+        <p class="text-sm font-semibold">{{ group.departure_date }}</p>
+      </div>
+      <div class="text-center">
+        <p class="text-xs mb-2" style="color:#86868b">返回</p>
+        <p class="text-sm font-semibold">{{ group.return_date if group.return_date else '-' }}</p>
+      </div>
+      <div class="text-center">
+        <p class="text-xs mb-2" style="color:#86868b">截止报名</p>
+        <p class="text-sm font-semibold" style="color:#ff9500">{{ group.deadline_date }}</p>
+      </div>
+      <div class="text-center">
+        <p class="text-xs mb-2" style="color:#86868b">剩余名额</p>
+        <p class="text-sm font-semibold" style="color:#34c759">{{ group.max_participants - group.current_participants }}/{{ group.max_participants }}</p>
+      </div>
     </div>
 
+    <!-- Description -->
     {% if group.route and group.route.description %}
-    <div class="pt-24" style="border-top:0.5px solid rgba(var(--border),0.6)">
-      <h3 class="text-base font-semibold mb-10">行程介绍</h3>
-      <p class="text-sm leading-relaxed" style="color:rgb(var(--fg-secondary))">{{ group.route.description }}</p>
+    <div>
+      <h3 class="text-sm font-semibold mb-6">行程介绍</h3>
+      <p class="text-sm" style="color:#86868b;line-height:1.7">{{ group.route.description }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right: sidebar -->
+  <div class="card-frosted" style="padding:20px 24px;position:sticky;top:88px">
+    <h3 class="text-sm font-semibold mb-12">价格信息</h3>
+
+    <div class="flex justify-between items-baseline mb-8">
+      <span class="text-sm" style="color:#86868b">成人</span>
+      <span class="text-xl font-bold">¥{{ "%.0f"|format(group.adult_price) }}<span class="text-sm font-normal" style="color:#86868b">/人</span></span>
+    </div>
+    {% if group.child_price %}
+    <div class="flex justify-between items-baseline mb-12">
+      <span class="text-sm" style="color:#86868b">儿童</span>
+      <span class="text-xl font-bold">¥{{ "%.0f"|format(group.child_price) }}<span class="text-sm font-normal" style="color:#86868b">/人</span></span>
     </div>
     {% endif %}
 
-    <div style="border-top:0.5px solid rgba(var(--border),0.6);padding-top:24px">
-      <h3 class="text-base font-semibold mb-16">行程信息</h3>
-      <div class="grid grid-cols-4 gap-10">
-        <div class="p-14 rounded-2xl text-center" style="background:rgb(var(--muted))">
-          <p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">出发日期</p>
-          <p class="text-sm font-semibold">{{ group.departure_date }}</p>
-        </div>
-        {% if group.return_date %}
-        <div class="p-14 rounded-2xl text-center" style="background:rgb(var(--muted))">
-          <p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">返回日期</p>
-          <p class="text-sm font-semibold">{{ group.return_date }}</p>
-        </div>
-        {% endif %}
-        <div class="p-14 rounded-2xl text-center" style="background:rgb(var(--muted))">
-          <p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">截止报名</p>
-          <p class="text-sm font-semibold" style="color:rgb(var(--warning))">{{ group.deadline_date }}</p>
-        </div>
-        <div class="p-14 rounded-2xl text-center" style="background:rgb(var(--muted))">
-          <p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">剩余名额</p>
-          <p class="text-sm font-semibold" style="color:rgb(var(--success))">{{ group.max_participants - group.current_participants }}/{{ group.max_participants }}</p>
-        </div>
-      </div>
+    {% if group.discount_info %}
+    <div class="flex items-center gap-6 px-10 py-6 rounded-md mb-12" style="background:rgba(255,149,0,0.06);font-size:12px;color:#ff9500">
+      <i class="fa-solid fa-tag text-xs"></i> {{ group.discount_info }}
     </div>
-  </div>
+    {% endif %}
 
-  <!-- Sidebar -->
-  <div class="flex flex-col gap-16" style="position:sticky;top:88px;align-self:start">
-    <div class="card p-28 flex flex-col gap-20">
-      <h3 class="text-base font-semibold">价格信息</h3>
-      <div class="flex flex-col gap-14">
-        <div class="flex justify-between items-baseline">
-          <span class="text-sm" style="color:rgb(var(--fg-secondary))">成人</span>
-          <span class="text-2xl font-bold tracking-tight">¥{{ "%.0f"|format(group.adult_price) }}
-            <span class="text-sm font-normal" style="color:rgb(var(--fg-secondary))">/人</span>
-          </span>
-        </div>
-        {% if group.child_price %}
-        <div class="flex justify-between items-baseline">
-          <span class="text-sm" style="color:rgb(var(--fg-secondary))">儿童</span>
-          <span class="text-2xl font-bold tracking-tight">¥{{ "%.0f"|format(group.child_price) }}
-            <span class="text-sm font-normal" style="color:rgb(var(--fg-secondary))">/人</span>
-          </span>
-        </div>
-        {% endif %}
-      </div>
-      {% if group.discount_info %}
-      <div class="p-14 rounded-xl flex items-start gap-8" style="background:rgb(var(--warning-light))">
-        <svg width="15" height="15" viewBox="0 0 20 20" fill="rgb(var(--warning))" stroke="none"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
-        <span class="text-xs font-medium" style="color:rgb(var(--warning))">{{ group.discount_info }}</span>
-      </div>
-      {% endif %}
-      <a href="{{ url_for('customer.book_tour', id=group.id) }}" class="btn-primary w-full" style="text-decoration:none">立即预订</a>
-    </div>
+    <a href="{{ url_for('customer.book_tour', id=group.id) }}" class="btn-primary w-full" style="text-decoration:none">立即预订</a>
   </div>
 </div>
 {% endblock %}

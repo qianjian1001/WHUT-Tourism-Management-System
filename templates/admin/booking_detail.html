@@ -1,130 +1,166 @@
-{% extends "base.html" %}{% block title %}预订详情 — 途行旅行社{% endblock %}{% block content %}
-<nav class="flex items-center gap-8 text-sm mb-28" style="color:rgb(var(--fg-secondary))">
-  <a href="{{ url_for('admin.bookings') }}" class="no-underline" style="color:inherit">预订管理</a>
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
-  <span class="font-medium" style="color:rgb(var(--fg))">{{ booking.booking_no }}</span>
+{% extends "base.html" %}{% block breadcrumb %}
+<nav class="breadcrumb">
+  <a href="{{ url_for('admin.bookings') }}">预订管理</a>
+  <span>/</span>
+  <span>{{ booking.booking_no }}</span>
 </nav>
+{% endblock %}{% block content %}
+<div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start">
 
-<div class="grid gap-20" style="grid-template-columns:1fr 380px">
-  <div class="flex flex-col gap-20">
+  <!-- Left column -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+
     <!-- Booking info -->
-    <div class="card p-28 flex flex-col gap-16">
-      <div class="flex items-center justify-between">
-        <h3 class="text-base font-semibold">预订信息</h3>
-        {% if booking.status == 'pending' %}<span class="badge badge-warning">待确认</span>
-        {% elif booking.status == 'confirmed' %}<span class="badge badge-brand">已确认</span>
-        {% elif booking.status == 'completed' %}<span class="badge badge-success">已完成</span>
-        {% elif booking.status == 'cancelled' %}<span class="badge badge-danger">已取消</span>{% endif %}
+    <div class="card-frosted" style="padding:20px 24px">
+      <div class="flex items-center justify-between mb-14">
+        <h2 class="text-lg font-semibold">{{ booking.booking_no }}</h2>
+        {% if booking.status == 'pending' %}<span class="badge-apple badge-orange">待确认</span>
+        {% elif booking.status == 'confirmed' %}<span class="badge-apple badge-blue">已确认</span>
+        {% elif booking.status == 'completed' %}<span class="badge-apple badge-green">已完成</span>
+        {% elif booking.status == 'cancelled' %}<span class="badge-apple badge-red">已取消</span>
+        {% elif booking.status == 'pending_cancel' %}<span class="badge-apple badge-red">已取消</span>
+        {% else %}<span class="badge-apple badge-gray">{{ booking.status }}</span>{% endif %}
       </div>
-      <div class="grid grid-cols-2 gap-12">
-        <div class="p-14 rounded-2xl" style="background:rgb(var(--muted))"><p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">预订编号</p><p class="text-sm font-medium" style="color:rgb(var(--primary))"><span style="font-variant-numeric:tabular-nums">{{ booking.booking_no }}</span></p></div>
-        <div class="p-14 rounded-2xl" style="background:rgb(var(--muted))"><p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">旅游团号</p><p class="text-sm font-medium">{{ booking.tour_group.code if booking.tour_group }}</p></div>
-        <div class="p-14 rounded-2xl" style="background:rgb(var(--muted))"><p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">路线</p><p class="text-sm font-medium">{{ booking.tour_group.route.name if booking.tour_group and booking.tour_group.route }}</p></div>
-        <div class="p-14 rounded-2xl" style="background:rgb(var(--muted))"><p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">出发</p><p class="text-sm font-medium">{{ booking.tour_group.departure_date if booking.tour_group }}</p></div>
-        <div class="p-14 rounded-2xl" style="background:rgb(var(--muted))"><p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">申请人</p><p class="text-sm font-medium">{{ booking.applicant_name }} · {{ booking.applicant_phone }}</p></div>
-        <div class="p-14 rounded-2xl" style="background:rgb(var(--muted))"><p class="text-xs mb-4" style="color:rgb(var(--fg-secondary))">大人/小孩</p><p class="text-sm font-medium">{{ booking.adult_count }} / {{ booking.child_count }}</p></div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:12px">
+        <div><p class="text-xs mb-2" style="color:#86868b">旅游团号</p><p class="text-sm font-medium">{{ booking.tour_group.code if booking.tour_group }}</p></div>
+        <div><p class="text-xs mb-2" style="color:#86868b">路线</p><p class="text-sm font-medium">{{ booking.tour_group.route.name if booking.tour_group and booking.tour_group.route }}</p></div>
+        <div><p class="text-xs mb-2" style="color:#86868b">出发日期</p><p class="text-sm font-medium">{{ booking.tour_group.departure_date if booking.tour_group }}</p></div>
+        <div><p class="text-xs mb-2" style="color:#86868b">人数 大/小</p><p class="text-sm font-medium">{{ booking.adult_count }} / {{ booking.child_count }}</p></div>
+        <div><p class="text-xs mb-2" style="color:#86868b">申请人</p><p class="text-sm font-medium">{{ booking.applicant_name }}</p></div>
+        <div><p class="text-xs mb-2" style="color:#86868b">电话</p><p class="text-sm font-medium">{{ booking.applicant_phone }}</p></div>
       </div>
     </div>
 
     <!-- Participants -->
-    <div class="card p-28">
-      <div class="flex items-center justify-between mb-16">
-        <h3 class="text-base font-semibold">参加者 <span class="text-sm font-normal" style="color:rgb(var(--fg-secondary))">({{ participants|selectattr('status','equalto','active')|list|length }}/{{ booking.adult_count + booking.child_count }})</span></h3>
+    <div class="card-frosted" style="padding:20px 24px">
+      <div class="flex items-center justify-between mb-12">
+        <h3 class="text-sm font-semibold">参加者 ({{ participants|selectattr('status','equalto','active')|list|length }}/{{ booking.adult_count + booking.child_count }})</h3>
         {% if booking.status in ['confirmed', 'completed'] and not booking.participants_entered %}
-        <button onclick="document.getElementById('addParticipantModal').classList.remove('hidden')" class="btn-primary" style="height:34px;font-size:13px;padding:0 16px">+ 添加</button>
+        <button onclick="document.getElementById('addParticipantModal').classList.remove('hidden')" class="btn-primary" style="height:30px;font-size:13px;padding:0 14px">+ 添加</button>
         {% endif %}
       </div>
       {% if participants %}
-      <div class="flex flex-col gap-8">
+      <div style="display:flex;flex-direction:column;gap:4px">
         {% for p in participants %}
-        <div class="flex items-center justify-between p-14 rounded-2xl" style="background:rgb(var(--muted))">
-          <div class="flex items-center gap-10">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold" style="background:rgb(var(--card));border:0.5px solid rgba(var(--border),0.5)">{{ p.name[0] }}</div>
+        <div class="flex items-center justify-between" style="padding:8px 12px;background:rgba(0,0,0,0.02);border-radius:6px">
+          <div class="flex items-center gap-8">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0" style="background:{% if p.participant_type == 'adult' %}#007aff{% else %}#ff9500{% endif %}">{{ p.name[0] }}</div>
             <div>
-              <p class="text-sm font-medium">{{ p.name }}</p>
-              <p class="text-xs" style="color:rgb(var(--fg-secondary))">{{ '成人' if p.participant_type == 'adult' else '儿童' }}{% if p.is_applicant %} · 申请人{% endif %}</p>
+              <span class="text-sm font-medium">{{ p.name }}</span>
+              <span class="text-xs" style="color:#86868b;margin-left:4px">{{ '成人' if p.participant_type == 'adult' else '儿童' }}{% if p.is_applicant %} · 申请人{% endif %}</span>
             </div>
           </div>
-          <div class="flex items-center gap-8">
-            <span class="{{ 'badge badge-success' if p.status == 'active' else 'badge badge-danger' }}">{{ '正常' if p.status == 'active' else '已取消' }}</span>
+          <div class="flex items-center gap-6">
+            <span class="{{ 'badge-apple badge-green' if p.status == 'active' else 'badge-apple badge-red' }}" style="font-size:10px">{{ '正常' if p.status == 'active' else '已取消' }}</span>
             {% if p.status == 'active' and booking.status in ['confirmed', 'completed'] %}
-            <form method="POST" action="{{ url_for('admin.cancel_participant', booking_id=booking.id, pid=p.id) }}" onsubmit="return confirm('确认取消？')">
-              <button class="btn-ghost w-9 h-9 p-0" style="color:rgb(var(--danger))">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
+            <form method="POST" action="{{ url_for('admin.cancel_participant', booking_id=booking.id, pid=p.id) }}" onsubmit="return confirm('确认取消该参加者？')">
+              <button class="btn-ghost" style="height:26px;width:26px;padding:0;color:#ff3b30;border:none"><i class="fa-solid fa-xmark text-xs"></i></button>
             </form>
             {% endif %}
           </div>
         </div>{% endfor %}
       </div>
-      {% else %}<p class="text-sm py-28 text-center" style="color:rgb(var(--fg-secondary))">暂无参加者信息</p>{% endif %}
+      {% else %}
+      <p style="color:#86868b;font-size:14px;text-align:center;padding:20px 0">暂无参加者信息</p>
+      {% endif %}
     </div>
+
+    <!-- Cancellations -->
+    {% if cancellations %}
+    <div class="card-frosted" style="padding:20px 24px">
+      <h3 class="text-sm font-semibold mb-10">取消记录</h3>
+      {% for c in cancellations %}
+      <div class="flex justify-between text-sm" style="padding:8px 12px;background:rgba(0,0,0,0.02);border-radius:6px;margin-bottom:6px">
+        <span>{{ '整单取消' if c.cancel_type == 'entire' else '人员取消' }}</span>
+        <span style="color:#86868b">手续费 ¥{{ "%.0f"|format(c.cancellation_fee) }} · 退款 ¥{{ "%.0f"|format(c.refund_amount) }}</span>
+        <span class="text-xs" style="color:#86868b">{{ c.cancelled_at.strftime('%Y-%m-%d %H:%M') if c.cancelled_at }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
 
-  <!-- Sidebar -->
-  <div class="flex flex-col gap-16" style="position:sticky;top:88px;align-self:start">
-    <div class="card p-28 flex flex-col gap-16">
-      <h3 class="text-base font-semibold">财务操作</h3>
-      {% if not booking.deposit_paid and booking.status == 'pending' %}
-      <form method="POST" action="{{ url_for('admin.confirm_deposit', id=booking.id) }}">
-        <button class="btn-primary w-full">确认订金 ¥{{ "%.0f"|format(booking.deposit_amount) }}</button>
-      </form>
-      {% elif booking.deposit_paid and not booking.balance_paid and booking.status == 'confirmed' %}
-      <div class="flex flex-col gap-8 p-14 rounded-2xl" style="background:rgb(var(--muted))">
-        <div class="flex justify-between text-sm">
-          <span style="color:rgb(var(--fg-secondary))">应付余款</span>
-          <span class="text-2xl font-bold" style="color:rgb(var(--danger))">¥{{ "%.0f"|format(booking.balance_amount) }}</span>
-        </div>
-        <div class="flex justify-between text-xs">
-          <span style="color:rgb(var(--fg-secondary))">截止</span>
-          <span class="font-medium" style="color:rgb(var(--fg))">{{ booking.payment_deadline.strftime('%Y-%m-%d') if booking.payment_deadline else '-' }}</span>
-        </div>
-      </div>
-      <form method="POST" action="{{ url_for('admin.confirm_balance', id=booking.id) }}">
-        <input type="hidden" name="amount" value="{{ booking.balance_amount }}">
-        <button class="btn-primary w-full">确认余款收款</button>
-      </form>
-      {% elif booking.status == 'completed' %}
-      <div class="p-14 rounded-xl flex items-center gap-8" style="background:rgb(var(--success-light))">
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="rgb(var(--success))" stroke="none"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-        <span class="text-sm font-medium" style="color:rgb(var(--success))">全部款项已付清</span>
-      </div>{% endif %}
-      {% if payments %}
-      <div style="border-top:0.5px solid rgba(var(--border),0.6);padding-top:16px">
-        <div class="flex flex-col gap-8">
-          {% for p in payments %}
-          <div class="flex justify-between text-xs">
-            <span style="color:rgb(var(--fg-secondary))">{{ '订金' if p.payment_type == 'deposit' else '余款' if p.payment_type == 'balance' else '退款' }}</span>
-            <span>{{ p.paid_at.strftime('%m-%d %H:%M') if p.paid_at }} · ¥{{ "%.0f"|format(p.amount) }}</span>
-          </div>
-          {% endfor %}
-        </div>
-      </div>{% endif %}
-      {% if booking.status in ['pending', 'confirmed'] %}
-      <div style="border-top:0.5px solid rgba(var(--border),0.6);padding-top:16px">
-        <form method="POST" action="{{ url_for('admin.cancel_booking', id=booking.id) }}" onsubmit="return confirm('确认取消整个申请？')">
-          <button class="btn-destructive w-full">取消整个申请</button>
-        </form>
-      </div>{% endif %}
+  <!-- Right: Financial sidebar -->
+  <div class="card-frosted" style="padding:20px 24px;position:sticky;top:88px">
+    <h3 class="text-sm font-semibold mb-12">财务操作</h3>
+
+    <div class="flex justify-between text-sm mb-8">
+      <span style="color:#86868b">总旅费</span>
+      <span class="font-semibold">¥{{ "%.0f"|format(booking.total_amount) }}</span>
     </div>
+    <div class="flex justify-between text-sm mb-8">
+      <span style="color:#86868b">订金</span>
+      <span class="font-semibold">¥{{ "%.0f"|format(booking.deposit_amount) }}
+        {% if booking.deposit_paid %}<span class="badge-apple badge-green" style="font-size:10px;margin-left:4px">已付</span>{% else %}<span class="badge-apple badge-orange" style="font-size:10px;margin-left:4px">未付</span>{% endif %}
+      </span>
+    </div>
+    <div class="flex justify-between text-sm mb-12">
+      <span style="color:#86868b">余款</span>
+      <span class="font-semibold" style="color:#ff3b30">¥{{ "%.0f"|format(booking.balance_amount) }}
+        {% if booking.balance_paid %}<span class="badge-apple badge-green" style="font-size:10px;margin-left:4px">已付</span>{% else %}<span class="badge-apple badge-orange" style="font-size:10px;margin-left:4px">未付</span>{% endif %}
+      </span>
+    </div>
+
+    {% if not booking.deposit_paid and booking.status == 'pending' %}
+    <form method="POST" action="{{ url_for('admin.confirm_deposit', id=booking.id) }}">
+      <button class="btn-primary w-full">确认订金 ¥{{ "%.0f"|format(booking.deposit_amount) }}</button>
+    </form>
+    {% elif booking.deposit_paid and not booking.balance_paid and booking.status == 'confirmed' %}
+    <div style="padding:10px 12px;background:rgba(255,59,48,0.06);border-radius:8px;margin-bottom:12px">
+      <div class="flex justify-between text-sm mb-4">
+        <span style="color:#86868b">应付余款</span>
+        <span class="font-bold" style="color:#ff3b30">¥{{ "%.0f"|format(booking.balance_amount) }}</span>
+      </div>
+      <div class="flex justify-between text-xs">
+        <span style="color:#86868b">截止日期</span>
+        <span>{{ booking.payment_deadline.strftime('%Y-%m-%d') if booking.payment_deadline else '-' }}</span>
+      </div>
+    </div>
+    <form method="POST" action="{{ url_for('admin.confirm_balance', id=booking.id) }}">
+      <input type="hidden" name="amount" value="{{ booking.balance_amount }}">
+      <button class="btn-primary w-full">确认余款收款</button>
+    </form>
+    {% elif booking.status == 'completed' %}
+    <div style="padding:10px 12px;background:rgba(52,199,89,0.08);border-radius:8px;margin-bottom:12px">
+      <span class="text-sm font-medium" style="color:#34c759"><i class="fa-solid fa-circle-check" style="margin-right:6px"></i>全部款项已付清</span>
+    </div>
+    {% endif %}
+
+    {% if payments %}
+    <div style="border-top:1px solid rgba(0,0,0,0.05);padding-top:12px;margin-top:12px">
+      <p class="text-xs font-medium mb-4" style="color:#86868b">付款记录</p>
+      {% for p in payments %}
+      <div class="flex justify-between text-xs" style="margin-bottom:4px">
+        <span style="color:#86868b">{{ '订金' if p.payment_type == 'deposit' else '余款' if p.payment_type == 'balance' else '退款' }}</span>
+        <span>{{ p.paid_at.strftime('%m-%d %H:%M') if p.paid_at }} · ¥{{ "%.0f"|format(p.amount) }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if booking.status in ['pending', 'confirmed'] %}
+    <div style="border-top:1px solid rgba(0,0,0,0.05);padding-top:12px;margin-top:12px">
+      <form method="POST" action="{{ url_for('admin.cancel_booking', id=booking.id) }}" onsubmit="return confirm('确认取消整个申请？')">
+        <button class="btn-danger w-full">取消整个申请</button>
+      </form>
+    </div>
+    {% endif %}
   </div>
 </div>
 
 <!-- Add Participant Modal -->
-<div id="addParticipantModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-24" style="background:rgba(0,0,0,0.2);backdrop-filter:blur(8px)" onclick="if(event.target===this)this.classList.add('hidden')">
-  <div class="animate-scale-in w-full flex flex-col gap-20" style="max-width:380px;background:rgb(var(--card));border-radius:22px;padding:28px;box-shadow:0 20px 60px -12px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04)" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold tracking-tight">添加参加者</h3>
-      <button onclick="document.getElementById('addParticipantModal').classList.add('hidden')" class="btn-ghost w-9 h-9 p-0">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
+<div id="addParticipantModal" class="hidden modal-backdrop" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between mb-16">
+      <h3 class="text-base font-semibold">添加参加者</h3>
+      <button onclick="document.getElementById('addParticipantModal').classList.add('hidden')" class="btn-icon btn-text"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <form method="POST" action="{{ url_for('admin.add_participant', id=booking.id) }}" class="flex flex-col gap-14">
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">姓名</label><input type="text" name="name" class="input" required></div>
-      <div class="flex flex-col gap-6"><label class="text-sm font-medium">类型</label><select name="participant_type" class="input"><option value="adult">成人</option><option value="child">儿童</option></select></div>
-      <label class="flex items-center gap-8 text-sm cursor-pointer"><input type="checkbox" name="is_applicant" class="w-4 h-4 rounded"> 设为申请责任人</label>
-      <div class="flex gap-12 pt-8">
-        <button type="button" onclick="document.getElementById('addParticipantModal').classList.add('hidden')" class="btn-secondary flex-1">取消</button>
+    <form method="POST" action="{{ url_for('admin.add_participant', id=booking.id) }}">
+      <div class="mb-12"><label class="text-sm font-medium mb-2 block">姓名</label><input type="text" name="name" class="input-apple" required></div>
+      <div class="mb-12"><label class="text-sm font-medium mb-2 block">类型</label><select name="participant_type" class="input-apple"><option value="adult">成人</option><option value="child">儿童</option></select></div>
+      <label class="flex items-center gap-8 text-sm mb-14" style="cursor:pointer"><input type="checkbox" name="is_applicant" style="width:16px;height:16px;border-radius:4px"> 设为申请责任人</label>
+      <div class="flex gap-10">
+        <button type="button" onclick="document.getElementById('addParticipantModal').classList.add('hidden')" class="btn-ghost flex-1">取消</button>
         <button type="submit" class="btn-primary flex-1">保存</button>
       </div>
     </form>
