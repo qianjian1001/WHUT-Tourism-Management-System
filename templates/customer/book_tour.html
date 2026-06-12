@@ -113,7 +113,7 @@ var a=parseInt(document.getElementById('adultCount').value)||0,c=parseInt(docume
 if(a<1){a=1;document.getElementById('adultCount').value=1;}
 if(c<0){c=0;document.getElementById('childCount').value=0;}
 var total=adultPrice*a+childPrice*c,r;
-if(daysToDeparture>=60)r=0.2;else if(daysToDeparture>=30)r=0.3;else if(daysToDeparture>=20)r=0.4;else if(daysToDeparture>=10)r=0.5;else if(daysToDeparture>=2)r=0.8;else r=1.0;
+if(daysToDeparture>=60)r=0.1;else if(daysToDeparture>=30)r=0.2;else r=1.0;
 var dep=(adultPrice*a*r)+(adultPrice*0.6*c*r);
 document.getElementById('adultLabel').textContent=a;
 document.getElementById('childLabel').textContent=c;

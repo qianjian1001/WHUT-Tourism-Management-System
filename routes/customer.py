@@ -67,14 +67,10 @@ def book_tour(id):
 
         # Calculate deposit based on days before departure
         days_to_departure = (group.departure_date - date.today()).days
-        if days_to_departure >= 30:
-            deposit_per_person = (group.adult_price * 0.2) if days_to_departure >= 60 else (group.adult_price * 0.3)
-        elif days_to_departure >= 20:
-            deposit_per_person = group.adult_price * 0.4
-        elif days_to_departure >= 10:
-            deposit_per_person = group.adult_price * 0.5
-        elif days_to_departure >= 2:
-            deposit_per_person = group.adult_price * 0.8
+        if days_to_departure >= 60:
+            deposit_per_person = group.adult_price * 0.1
+        elif days_to_departure >= 30:
+            deposit_per_person = group.adult_price * 0.2
         else:
             deposit_per_person = group.adult_price
 
