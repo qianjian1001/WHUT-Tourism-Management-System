@@ -287,12 +287,10 @@ def cancel_booking(id):
 
     # Calculate cancellation fee based on days before departure
     if days_to_departure >= 30:
-        fee_rate = 0.1
-    elif days_to_departure >= 20:
-        fee_rate = 0.2
+        fee_rate = 0
     elif days_to_departure >= 10:
-        fee_rate = 0.3
-    elif days_to_departure >= 2:
+        fee_rate = 0.2
+    elif days_to_departure >= 1:
         fee_rate = 0.5
     else:
         fee_rate = 1.0
@@ -353,12 +351,10 @@ def cancel_participant(booking_id, pid):
 
     days_to_departure = (group.departure_date - date.today()).days
     if days_to_departure >= 30:
-        fee_rate = 0.1
-    elif days_to_departure >= 20:
-        fee_rate = 0.2
+        fee_rate = 0
     elif days_to_departure >= 10:
-        fee_rate = 0.3
-    elif days_to_departure >= 2:
+        fee_rate = 0.2
+    elif days_to_departure >= 1:
         fee_rate = 0.5
     else:
         fee_rate = 1.0

@@ -100,4 +100,52 @@
     {% endif %}
   </div>
 </div>
+
+<div class="card-frosted mt-20" style="padding:20px 24px">
+  <h3 class="text-sm font-semibold mb-12">业务办理须知</h3>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="flex items-start gap-10">
+      <div class="w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0 mt-1" style="background:rgba(0,122,255,0.08)">
+        <span class="text-xs font-semibold" style="color:#007aff">1</span>
+      </div>
+      <p class="text-sm" style="color:rgb(var(--fg));line-height:1.6">申请完成后，只能办理以下业务：<strong>参加者信息的变更或取消</strong>、<strong>整个申请的取消</strong>。新增加参加者被视为新的申请进行处理。</p>
+    </div>
+    <div class="flex items-start gap-10">
+      <div class="w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0 mt-1" style="background:rgba(255,149,0,0.08)">
+        <span class="text-xs font-semibold" style="color:#ff9500">2</span>
+      </div>
+      <p class="text-sm" style="color:rgb(var(--fg));line-height:1.6">取消或变更一部分参加者时，若对象为<strong>申请责任人本人</strong>，必须选定新的申请责任人。</p>
+    </div>
+    <div class="flex items-start gap-10">
+      <div class="w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0 mt-1" style="background:rgba(255,59,48,0.08)">
+        <span class="text-xs font-semibold" style="color:#ff3b30">3</span>
+      </div>
+      <div>
+        <p class="text-sm font-semibold mb-4" style="color:rgb(var(--fg))">取消手续费规则</p>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+          <div class="text-center" style="padding:10px 8px;background:rgba(52,199,89,0.05);border-radius:10px">
+            <p class="text-xs font-semibold" style="color:#34c759">≥30天</p>
+            <p class="text-lg font-bold mt-2" style="color:#34c759">0%</p>
+            <p class="text-xs mt-1" style="color:#86868b">免费取消</p>
+          </div>
+          <div class="text-center" style="padding:10px 8px;background:rgba(0,122,255,0.05);border-radius:10px">
+            <p class="text-xs font-semibold" style="color:#007aff">10-30天</p>
+            <p class="text-lg font-bold mt-2" style="color:#007aff">20%</p>
+            <p class="text-xs mt-1" style="color:#86868b">手续费</p>
+          </div>
+          <div class="text-center" style="padding:10px 8px;background:rgba(255,149,0,0.05);border-radius:10px">
+            <p class="text-xs font-semibold" style="color:#ff9500">1-10天</p>
+            <p class="text-lg font-bold mt-2" style="color:#ff9500">50%</p>
+            <p class="text-xs mt-1" style="color:#86868b">手续费</p>
+          </div>
+          <div class="text-center" style="padding:10px 8px;background:rgba(255,59,48,0.05);border-radius:10px">
+            <p class="text-xs font-semibold" style="color:#ff3b30">当天</p>
+            <p class="text-lg font-bold mt-2" style="color:#ff3b30">100%</p>
+            <p class="text-xs mt-1" style="color:#86868b">全款不退</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
